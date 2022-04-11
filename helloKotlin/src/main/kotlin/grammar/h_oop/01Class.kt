@@ -26,7 +26,7 @@ fun main() {
 
 class MyClass {}
 
-// if there is no contents in the Class `{}` could be removed. it never happens in java but it does in Kotlin.
+// if there is no contents in the Class `{}` could be removed. it never happens in java but it does in Kotlin because it's functional
 class MyClass2
 
 class MyClass3 {
