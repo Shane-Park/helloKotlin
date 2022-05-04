@@ -43,7 +43,7 @@ class PutApiController {
                 this.address = "queenstown"
                 this.phoneNumber = "123-4567"
             })
-            this.userRequest = userList
+            this.users = userList
         }
 
     }
