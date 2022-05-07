@@ -1,6 +1,7 @@
 package com.example.todo.model.http
 
 import com.example.todo.annotation.StringFormatDateTime
+import com.example.todo.database.Todo
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.validation.constraints.AssertTrue
@@ -33,4 +34,15 @@ data class TodoDto(
         }
     }
 
+}
+
+fun TodoDto.of(todo: Todo): TodoDto {
+    return TodoDto().apply {
+        this.index = todo.index
+        this.title = todo.title
+        this.description = todo.description
+        this.schedule = todo.schedule?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))
+        this.createdAt = todo.createdAt
+        this.updatedAt = todo.updatedAt
+    }
 }
