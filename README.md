@@ -12,6 +12,15 @@ Blog posts
 - [가볍게 읽어보는 Kotlin) 3. 제어문](https://shanepark.tistory.com/356)
 
 
-### 🕹 Kopling
-Spring MVC with Kotlin
-> will start on the end of April
+### 🕹 MVC & todo
+Spring MVC (Boot) with Kotlin (03.MAY.2022 ~ 08.MAY.2022)
+- Tried SpringBoot with Kotlin for the first time
+- Not too much different from Java. But Kotlin has their own methods and Code style which are quite impressive
+
+Blog posts
+
+- [일간에러) Spring Boot2.6에서 Springfox3 실행 실패 에러](https://shanepark.tistory.com/366)
+
+### Next...
+
+I'm gonna try SpringBoot + Kotlin + Spring Security in few weeks
