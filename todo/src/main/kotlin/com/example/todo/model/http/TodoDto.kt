@@ -2,24 +2,53 @@ package com.example.todo.model.http
 
 import com.example.todo.annotation.StringFormatDateTime
 import com.example.todo.database.Todo
+import io.swagger.annotations.ApiModelProperty
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.validation.constraints.AssertTrue
 import javax.validation.constraints.NotBlank
 
 data class TodoDto(
+    @field:ApiModelProperty(
+        value = "DB index",
+        example = "1",
+        required = false
+    )
     var index: Int? = null,
 
+    @field:ApiModelProperty(
+        value = "Todo title",
+        example = "todo management",
+        required = true
+    )
     @field:NotBlank
     var title: String? = null,
 
+    @field:ApiModelProperty(
+        value = "Todo Description",
+        example = "meet at Starbucks at 13:00",
+        required = false
+    )
     var description: String? = null,
 
+    @field:ApiModelProperty(
+        value = "Schedule time",
+        example = "2022-05-08 00:01:02",
+        required = true
+    )
     @field:StringFormatDateTime
     // yyyy-MM-dd HH:mm:ss
     var schedule: String? = null,
 
+    @field:ApiModelProperty(
+        value = "Created Date",
+        required = false
+    )
     var createdAt: LocalDateTime? = null,
+    @field:ApiModelProperty(
+        value = "Updated Date",
+        required = false
+    )
     var updatedAt: LocalDateTime? = null,
 
     ) {

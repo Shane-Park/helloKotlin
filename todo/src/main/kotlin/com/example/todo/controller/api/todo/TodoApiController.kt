@@ -2,9 +2,13 @@ package com.example.todo.controller.api.todo
 
 import com.example.todo.model.http.TodoDto
 import com.example.todo.service.TodoService
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+@Api(description = "Todo Management")
 @RestController
 @RequestMapping("/api/todo")
 class TodoApiController(
@@ -18,11 +22,15 @@ class TodoApiController(
     }
 
     // Read
+    @ApiOperation("Read Todo", notes = "TODO GET API")
     @GetMapping(value = [""], params = ["index"])
-    fun read(@RequestParam index: Int): TodoDto? {
+    fun read(
+        @ApiParam("index")
+        @RequestParam index: Int): TodoDto? {
         return todoService.read(index)
     }
 
+    @ApiOperation("Read Todo list", notes = "TODO GET API")
     @GetMapping("")
     fun readAll(): MutableList<TodoDto> {
         return todoService.readAll()
