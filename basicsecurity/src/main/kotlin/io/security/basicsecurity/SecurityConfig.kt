@@ -7,12 +7,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.UserDetailsService
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig : WebSecurityConfigurerAdapter() {
+class SecurityConfig(val userDetailsService: UserDetailsService) : WebSecurityConfigurerAdapter() {
 
     val log: Logger = LoggerFactory.getLogger(SecurityConfig::class.java)
 
@@ -20,6 +21,9 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
         http.authorizeRequests()
             .anyRequest().authenticated()
 
+        /**
+         * LOGIN
+         */
         http.formLogin()
             .defaultSuccessUrl("/")
             .failureUrl("/login")
@@ -38,6 +42,9 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 }
             }.permitAll()
 
+        /**
+         * LOGOUT
+         */
         http.logout()
             .logoutUrl("/logout")
             .logoutSuccessUrl("/login")
@@ -52,5 +59,14 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 response.sendRedirect("/login")
             }.deleteCookies("remember-me")
 
+        /**
+         * Remember Me
+         */
+        http.rememberMe()
+            .rememberMeParameter("remember") // default: remember-me
+            .tokenValiditySeconds(3600) // Default: 14 Days
+            .alwaysRemember(false) // if true, it always remembers even if remember me is not active
+            .userDetailsService(userDetailsService)
     }
+
 }
