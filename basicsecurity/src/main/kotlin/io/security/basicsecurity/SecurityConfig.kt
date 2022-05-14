@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetailsService
 import javax.servlet.http.HttpServletRequest
@@ -35,12 +36,14 @@ class SecurityConfig(val userDetailsService: UserDetailsService) : WebSecurityCo
                     println("authentication: ${authentication.name}")
                     response.sendRedirect("/")
                 }
-            }.failureHandler { _, response, exception ->
-                run {
-                    println("exception: ${exception.message}")
-                    response.sendRedirect("/login")
-                }
-            }.permitAll()
+            }
+//            .failureHandler { _, response, exception ->
+//                run {
+//                    println("exception: ${exception.message}")
+//                    response.sendRedirect("/login")
+//                }
+//            }
+            .permitAll()
 
         /**
          * LOGOUT
@@ -67,6 +70,24 @@ class SecurityConfig(val userDetailsService: UserDetailsService) : WebSecurityCo
             .tokenValiditySeconds(3600) // Default: 14 Days
             .alwaysRemember(false) // if true, it always remembers even if remember me is not active
             .userDetailsService(userDetailsService)
+
+        /**
+         * Limit maximum session
+         */
+        http.sessionManagement()
+            .maximumSessions(3) // maximum session count
+            .maxSessionsPreventsLogin(true) // block login when exceeds maximum sessions. default : false which expire old session
+//            .expiredUrl("/expired") // page to move when the session is expired
+
+        /**
+         * Session protect
+         */
+        http.sessionManagement()
+            .sessionFixation()
+//            .none() // if none attackers can inject their session to user and when the user login the attacker passes authentication
+            .changeSessionId() // Default is changeSessionId. Other options: none / migrateSession / newSession
+            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Always / If_Required (default) / Never : Not make but if exists use it / Stateless : Spring security do not make session and never use even if exists (JST)
+
     }
 
 }

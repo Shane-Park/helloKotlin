@@ -26,6 +26,5 @@ Blog posts
 Catch up with Spring security online class with Kotlin (11.MAY.2022~)
 
 - 21 Hours Spring Security online lecture originally written in java
-- get used to Kotlin and learn spring-security at the same time
-- first time writting Kotlin code myself not following
-- to help that will try to submit some easy leetcode questions with Kotlin
+- Goal: Getting used to Kotlin and learn spring-security at the same time
+- First time writting Kotlin code myself not following someone
