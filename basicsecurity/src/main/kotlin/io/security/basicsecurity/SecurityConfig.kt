@@ -3,6 +3,7 @@ package io.security.basicsecurity
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -19,7 +20,16 @@ class SecurityConfig(val userDetailsService: UserDetailsService) : WebSecurityCo
     val log: Logger = LoggerFactory.getLogger(SecurityConfig::class.java)
 
     override fun configure(http: HttpSecurity) {
+
+        /**
+         * Authorization. Role hierarchy not set yet
+         * antMatchers should start from narrow range to wider range
+         */
         http.authorizeRequests()
+//            .antMatchers("/user").hasRole("USER") // ADM or SYS can't access here!
+            .antMatchers("/user").access("hasRole('USER') or hasRole('ADMIN') or hasRole('SYS')")
+            .antMatchers("/admin/pay").hasRole("ADM") // SYS or USER can't access here!
+            .antMatchers("/admin/**").access("hasRole('ADMIN') or hasRole('SYS')") // ADMIN or SYS can access here
             .anyRequest().authenticated()
 
         /**
@@ -88,6 +98,15 @@ class SecurityConfig(val userDetailsService: UserDetailsService) : WebSecurityCo
             .changeSessionId() // Default is changeSessionId. Other options: none / migrateSession / newSession
             .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Always / If_Required (default) / Never : Not make but if exists use it / Stateless : Spring security do not make session and never use even if exists (JST)
 
+    }
+
+    override fun configure(auth: AuthenticationManagerBuilder) {
+        /**
+         * Create users
+         */
+        auth.inMemoryAuthentication().withUser("user").password("{noop}1234").roles("USER")
+        auth.inMemoryAuthentication().withUser("sys").password("{noop}1234").roles("SYS")
+        auth.inMemoryAuthentication().withUser("admin").password("{noop}1234").roles("ADMIN")
     }
 
 }
