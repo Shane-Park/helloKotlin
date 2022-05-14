@@ -31,4 +31,14 @@ class SecurityController {
         return "admin"
     }
 
+    @GetMapping("/denied")
+    fun denied() :String{
+        return "Access denied"
+    }
+
+    @GetMapping("/login")
+    fun login() :String{
+        return "Access denied"
+    }
+
 }

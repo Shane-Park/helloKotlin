@@ -10,6 +10,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.web.access.AccessDeniedHandler
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache
+import org.springframework.security.web.savedrequest.RequestCache
+import org.springframework.security.web.savedrequest.SavedRequest
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -26,6 +30,7 @@ class SecurityConfig(val userDetailsService: UserDetailsService) : WebSecurityCo
          * antMatchers should start from narrow range to wider range
          */
         http.authorizeRequests()
+            .antMatchers("/login").permitAll()
 //            .antMatchers("/user").hasRole("USER") // ADM or SYS can't access here!
             .antMatchers("/user").access("hasRole('USER') or hasRole('ADMIN') or hasRole('SYS')")
             .antMatchers("/admin/pay").hasRole("ADM") // SYS or USER can't access here!
@@ -41,10 +46,13 @@ class SecurityConfig(val userDetailsService: UserDetailsService) : WebSecurityCo
             .usernameParameter("userId")
             .passwordParameter("password")
             .loginProcessingUrl("/login_process")
-            .successHandler { _, response, authentication ->
+            .successHandler { request, response, authentication ->
                 run {
                     println("authentication: ${authentication.name}")
-                    response.sendRedirect("/")
+                    val requestCache: RequestCache = HttpSessionRequestCache()
+                    val savedRequest: SavedRequest = requestCache.getRequest(request, response)
+                    val redirectUrl = savedRequest.redirectUrl
+                    response.sendRedirect(redirectUrl)
                 }
             }
 //            .failureHandler { _, response, exception ->
@@ -97,6 +105,17 @@ class SecurityConfig(val userDetailsService: UserDetailsService) : WebSecurityCo
 //            .none() // if none attackers can inject their session to user and when the user login the attacker passes authentication
             .changeSessionId() // Default is changeSessionId. Other options: none / migrateSession / newSession
             .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Always / If_Required (default) / Never : Not make but if exists use it / Stateless : Spring security do not make session and never use even if exists (JST)
+
+        /**
+         * Exception Handling
+         */
+        http.exceptionHandling()
+//            .authenticationEntryPoint { request, response, authException ->
+//                response.sendRedirect("/login")
+//            }
+            .accessDeniedHandler(AccessDeniedHandler { request, response, accessDeniedException ->
+                response.sendRedirect("/denied")
+            })
 
     }
 
