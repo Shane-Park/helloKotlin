@@ -3,6 +3,7 @@ package io.security.basicsecurity
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -117,6 +118,12 @@ class SecurityConfig(val userDetailsService: UserDetailsService) : WebSecurityCo
                 response.sendRedirect("/denied")
             })
 
+        /**
+         * CSRF
+         */
+        http.csrf() // default enabled.
+//            .disable()
+
     }
 
     override fun configure(auth: AuthenticationManagerBuilder) {
@@ -128,4 +135,26 @@ class SecurityConfig(val userDetailsService: UserDetailsService) : WebSecurityCo
         auth.inMemoryAuthentication().withUser("admin").password("{noop}1234").roles("ADMIN")
     }
 
+}
+
+@Configuration
+@Order(1)
+class SecurityConfig2 : WebSecurityConfigurerAdapter(){
+    override fun configure(http: HttpSecurity) {
+        http.antMatcher("/admin/**")
+            .authorizeRequests()
+            .anyRequest().authenticated()
+            .and().httpBasic()
+    }
+}
+
+@Configuration
+@Order(2)
+class SecurityConfig3 : WebSecurityConfigurerAdapter(){
+    override fun configure(http: HttpSecurity) {
+        http.authorizeRequests()
+            .anyRequest().permitAll()
+            .and()
+            .formLogin()
+    }
 }
