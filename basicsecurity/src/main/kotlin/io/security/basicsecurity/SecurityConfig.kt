@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache
@@ -123,6 +124,11 @@ class SecurityConfig(val userDetailsService: UserDetailsService) : WebSecurityCo
          */
         http.csrf() // default enabled.
 //            .disable()
+
+        /**
+         * share authentication with children threads
+         */
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL)
 
     }
 
