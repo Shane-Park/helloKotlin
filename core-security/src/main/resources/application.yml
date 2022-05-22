@@ -1,0 +1,25 @@
+spring:
+    datasource:
+        password: pass
+        url: jdbc:postgresql://localhost:5432/springboot
+        username: postgres
+    devtools:
+        livereload:
+            enabled: true
+        restart:
+            enabled: true
+    jpa:
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                format_sql: true
+                jdbc:
+                    lob:
+                        non_contextual_creation: true
+                show_sql: true
+    main:
+        allow-bean-definition-overriding: true
+    thymeleaf:
+        cache: false

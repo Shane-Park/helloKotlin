@@ -2,3 +2,4 @@
 /**/.gradle/
 /**/build/
 /**/out/
+core-security/src/main/resources/application-dev.yml
