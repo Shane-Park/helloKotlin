@@ -49,6 +49,11 @@ class SecurityConfig(private val userDetailService: UserDetailsService) : WebSec
             .antMatchers("/messages").hasRole("MANAGER")
             .antMatchers("/config").hasRole("ADMIN")
             .anyRequest().authenticated().and()
+
             .formLogin()
+            .loginPage("/login")
+            .loginProcessingUrl("/login_proc")
+            .defaultSuccessUrl("/")
+            .permitAll()
     }
 }
