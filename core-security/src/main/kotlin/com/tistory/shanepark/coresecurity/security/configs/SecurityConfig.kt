@@ -1,5 +1,6 @@
 package com.tistory.shanepark.coresecurity.security.configs
 
+import com.tistory.shanepark.coresecurity.security.common.FormAuthenticationDetailsSource
 import com.tistory.shanepark.coresecurity.security.provider.CustomAuthenticationProvider
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
@@ -16,7 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig(private val userDetailService: UserDetailsService) : WebSecurityConfigurerAdapter() {
+class SecurityConfig(
+    private val userDetailService: UserDetailsService,
+    private val authenticationDetailsSource: FormAuthenticationDetailsSource,
+) : WebSecurityConfigurerAdapter() {
 
     override fun configure(web: WebSecurity) {
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations())
@@ -53,6 +57,7 @@ class SecurityConfig(private val userDetailService: UserDetailsService) : WebSec
             .formLogin()
             .loginPage("/login")
             .loginProcessingUrl("/login_proc")
+            .authenticationDetailsSource(authenticationDetailsSource)
             .defaultSuccessUrl("/")
             .permitAll()
     }

@@ -1,8 +1,10 @@
 package com.tistory.shanepark.coresecurity.security.provider
 
+import com.tistory.shanepark.coresecurity.security.common.FormWebAuthenticationDetails
 import com.tistory.shanepark.coresecurity.security.service.AccountContext
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -20,6 +22,16 @@ class CustomAuthenticationProvider(
         if (!passwordEncoder.matches(password as CharSequence?, accountContext.account.password)) {
             throw BadCredentialsException("BadCredentialException")
         }
+
+        val formWebAuthenticationDetails: FormWebAuthenticationDetails =
+            authentication.details as FormWebAuthenticationDetails
+        val secretKey = formWebAuthenticationDetails.secretKey
+
+        if ("secret" != secretKey) {
+            // but even if it throws Exception, it succeeds login process on second try...
+            throw InsufficientAuthenticationException("InsufficientAuthenticationException")
+        }
+
         return UsernamePasswordAuthenticationToken(accountContext.account, null, accountContext.authorities)
     }
 
