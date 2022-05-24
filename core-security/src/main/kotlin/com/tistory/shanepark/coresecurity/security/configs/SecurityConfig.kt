@@ -1,4 +1,4 @@
-package com.tistory.shanepark.coresecurity.security
+package com.tistory.shanepark.coresecurity.security.configs
 
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
@@ -8,20 +8,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig : WebSecurityConfigurerAdapter() {
+class SecurityConfig(private val userDetailService: UserDetailsService) : WebSecurityConfigurerAdapter() {
 
     override fun configure(web: WebSecurity) {
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations())
     }
 
     override fun configure(auth: AuthenticationManagerBuilder) {
-        val password = passwordEncoder().encode("1234")
+        auth.userDetailsService(userDetailService)
 
+        val password = passwordEncoder().encode("1234")
         auth.inMemoryAuthentication().withUser("user").password(password).roles("USER")
         auth.inMemoryAuthentication().withUser("manager").password(password).roles("MANAGER")
         auth.inMemoryAuthentication().withUser("admin").password(password).roles("ADMIN")
