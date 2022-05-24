@@ -1,8 +1,10 @@
 package com.tistory.shanepark.coresecurity.security.configs
 
+import com.tistory.shanepark.coresecurity.security.provider.CustomAuthenticationProvider
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
@@ -21,12 +23,17 @@ class SecurityConfig(private val userDetailService: UserDetailsService) : WebSec
     }
 
     override fun configure(auth: AuthenticationManagerBuilder) {
-        auth.userDetailsService(userDetailService)
+//        auth.userDetailsService(userDetailService)
+        auth.authenticationProvider(authenticationProvider())
 
         val password = passwordEncoder().encode("1234")
         auth.inMemoryAuthentication().withUser("user").password(password).roles("USER")
         auth.inMemoryAuthentication().withUser("manager").password(password).roles("MANAGER")
         auth.inMemoryAuthentication().withUser("admin").password(password).roles("ADMIN")
+    }
+
+    private fun authenticationProvider(): AuthenticationProvider? {
+        return CustomAuthenticationProvider(userDetailService, passwordEncoder())
     }
 
     @Bean

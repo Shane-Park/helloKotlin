@@ -1,6 +1,5 @@
 package com.tistory.shanepark.coresecurity.security.service
 
-import com.tistory.shanepark.coresecurity.domain.Account
 import com.tistory.shanepark.coresecurity.repository.UserRepository
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -13,11 +12,7 @@ import org.springframework.stereotype.Service
 class CustomUserDetailsService(val userRepository: UserRepository) : UserDetailsService {
 
     override fun loadUserByUsername(username: String): UserDetails {
-        val account: Account = userRepository.findByUsername(username)
-
-        if (account == null) {
-            throw UsernameNotFoundException("username not found")
-        }
+        val account = userRepository.findByUsername(username) ?: throw UsernameNotFoundException("username not found")
 
         val roles = mutableListOf<GrantedAuthority>()
         roles.add(SimpleGrantedAuthority(account.role))

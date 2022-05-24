@@ -4,6 +4,6 @@ import com.tistory.shanepark.coresecurity.domain.Account
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.User
 
-class AccountContext(account: Account, authorities: MutableCollection<out GrantedAuthority>?) :
+class AccountContext(val account: Account, authorities: MutableCollection<out GrantedAuthority>?) :
     User(account.username, account.password, authorities) {
 }

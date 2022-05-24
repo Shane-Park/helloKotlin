@@ -9,7 +9,7 @@ class Account(
     username: String?,
     password: String?,
     email: String?,
-    age: String?,
+    age: Int?,
     role: String?,
 ) {
     constructor() : this(null, null, null, null, null)
@@ -20,7 +20,7 @@ class Account(
     var username: String? = username
     var password: String? = password
     var email: String? = email
-    var age: String? = age
+    var age: Int? = age
     var role: String? = role
 
     companion object {
