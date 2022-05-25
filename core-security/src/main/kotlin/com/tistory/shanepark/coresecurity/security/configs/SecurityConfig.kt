@@ -1,6 +1,7 @@
 package com.tistory.shanepark.coresecurity.security.configs
 
 import com.tistory.shanepark.coresecurity.security.common.FormAuthenticationDetailsSource
+import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationFailureHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationSuccessHandler
 import com.tistory.shanepark.coresecurity.security.provider.CustomAuthenticationProvider
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
@@ -21,7 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class SecurityConfig(
     private val userDetailService: UserDetailsService,
     private val authenticationDetailsSource: FormAuthenticationDetailsSource,
-    private val customAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler
+    private val customAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler,
+    private val customAuthenticationFailureHandler: CustomAuthenticationFailureHandler,
 ) : WebSecurityConfigurerAdapter() {
 
     override fun configure(web: WebSecurity) {
@@ -50,7 +52,7 @@ class SecurityConfig(
     override fun configure(http: HttpSecurity) {
         http
             .authorizeRequests()
-            .antMatchers("/", "/users").permitAll()
+            .antMatchers("/", "/user/login/**", "/login*").permitAll()
             .antMatchers("/mypage").hasRole("USER")
             .antMatchers("/messages").hasRole("MANAGER")
             .antMatchers("/config").hasRole("ADMIN")
@@ -62,6 +64,7 @@ class SecurityConfig(
             .authenticationDetailsSource(authenticationDetailsSource)
             .defaultSuccessUrl("/")
             .successHandler(customAuthenticationSuccessHandler)
+            .failureHandler(customAuthenticationFailureHandler)
             .permitAll()
     }
 }
