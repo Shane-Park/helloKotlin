@@ -1,6 +1,7 @@
 package com.tistory.shanepark.coresecurity.security.configs
 
 import com.tistory.shanepark.coresecurity.security.common.FormAuthenticationDetailsSource
+import com.tistory.shanepark.coresecurity.security.filter.AjaxLoginProcessingFilter
 import com.tistory.shanepark.coresecurity.security.handler.CustomAccessDeniedHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationFailureHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationSuccessHandler
@@ -18,14 +19,15 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.access.AccessDeniedHandler
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
     private val userDetailService: UserDetailsService,
-    private val authenticationDetailsSource: FormAuthenticationDetailsSource,
-    private val customAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler,
-    private val customAuthenticationFailureHandler: CustomAuthenticationFailureHandler,
+    private val formWebAuthenticationDetailsSource: FormAuthenticationDetailsSource,
+    private val formAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler,
+    private val formAuthenticationFailureHandler: CustomAuthenticationFailureHandler,
 ) : WebSecurityConfigurerAdapter() {
 
     override fun configure(web: WebSecurity) {
@@ -63,18 +65,28 @@ class SecurityConfig(
             .formLogin()
             .loginPage("/login")
             .loginProcessingUrl("/login_proc")
-            .authenticationDetailsSource(authenticationDetailsSource)
+            .authenticationDetailsSource(formWebAuthenticationDetailsSource)
             .defaultSuccessUrl("/")
-            .successHandler(customAuthenticationSuccessHandler)
-            .failureHandler(customAuthenticationFailureHandler)
+            .successHandler(formAuthenticationSuccessHandler)
+            .failureHandler(formAuthenticationFailureHandler)
             .permitAll().and()
 
             .exceptionHandling()
-            .accessDeniedHandler(accessDeniedHandler())
+            .accessDeniedHandler(accessDeniedHandler()).and()
+
+            .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
+            .csrf().disable()
     }
 
     @Bean
     fun accessDeniedHandler(): AccessDeniedHandler? {
         return CustomAccessDeniedHandler("/denied")
+    }
+
+    @Bean
+    fun ajaxLoginProcessingFilter(): AjaxLoginProcessingFilter {
+        val ajaxLoginProcessingFilter = AjaxLoginProcessingFilter()
+        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBean())
+        return ajaxLoginProcessingFilter
     }
 }

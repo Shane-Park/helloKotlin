@@ -1,9 +1,12 @@
 package com.tistory.shanepark.coresecurity.domain
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
+
 data class AccountDto(
-    val username: String,
-    val password: String,
-    val email: String,
-    val age: Int,
-    val role: String,
+    @JsonProperty("username") val username: String,
+    @JsonProperty("password") val password: String,
+    @JsonProperty("email") val email: String?,
+    @JsonProperty("age") val age: Int?,
+    @JsonProperty("role") val role: String?,
 )
