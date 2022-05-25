@@ -1,6 +1,7 @@
 package com.tistory.shanepark.coresecurity.security.configs
 
 import com.tistory.shanepark.coresecurity.security.common.FormAuthenticationDetailsSource
+import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationSuccessHandler
 import com.tistory.shanepark.coresecurity.security.provider.CustomAuthenticationProvider
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class SecurityConfig(
     private val userDetailService: UserDetailsService,
     private val authenticationDetailsSource: FormAuthenticationDetailsSource,
+    private val customAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler
 ) : WebSecurityConfigurerAdapter() {
 
     override fun configure(web: WebSecurity) {
@@ -59,6 +61,7 @@ class SecurityConfig(
             .loginProcessingUrl("/login_proc")
             .authenticationDetailsSource(authenticationDetailsSource)
             .defaultSuccessUrl("/")
+            .successHandler(customAuthenticationSuccessHandler)
             .permitAll()
     }
 }
