@@ -1,6 +1,7 @@
 package com.tistory.shanepark.coresecurity.security.configs
 
 import com.tistory.shanepark.coresecurity.security.common.FormAuthenticationDetailsSource
+import com.tistory.shanepark.coresecurity.security.handler.CustomAccessDeniedHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationFailureHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationSuccessHandler
 import com.tistory.shanepark.coresecurity.security.provider.CustomAuthenticationProvider
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.access.AccessDeniedHandler
 
 @Configuration
 @EnableWebSecurity
@@ -65,6 +67,14 @@ class SecurityConfig(
             .defaultSuccessUrl("/")
             .successHandler(customAuthenticationSuccessHandler)
             .failureHandler(customAuthenticationFailureHandler)
-            .permitAll()
+            .permitAll().and()
+
+            .exceptionHandling()
+            .accessDeniedHandler(accessDeniedHandler())
+    }
+
+    @Bean
+    fun accessDeniedHandler(): AccessDeniedHandler? {
+        return CustomAccessDeniedHandler("/denied")
     }
 }

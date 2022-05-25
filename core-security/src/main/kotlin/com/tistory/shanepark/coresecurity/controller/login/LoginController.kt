@@ -1,5 +1,7 @@
 package com.tistory.shanepark.coresecurity.controller.login
 
+import com.tistory.shanepark.coresecurity.domain.Account
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -36,5 +38,17 @@ class LoginController {
          */
         SecurityContextLogoutHandler().logout(request, response, null)
         return "redirect:/login"
+    }
+
+    @GetMapping("/denied")
+    fun accessDenied(
+        @RequestParam(value = "exception", required = false) exception: String?,
+        model: Model,
+    ): String {
+        val authentication = SecurityContextHolder.getContext().authentication
+        val user: Account = authentication.principal as Account
+        model.addAttribute("username", user.username)
+        model.addAttribute("exception", exception)
+        return "user/login/denied"
     }
 }

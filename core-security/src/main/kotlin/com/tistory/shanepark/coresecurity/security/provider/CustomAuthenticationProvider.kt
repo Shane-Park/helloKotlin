@@ -2,6 +2,7 @@ package com.tistory.shanepark.coresecurity.security.provider
 
 import com.tistory.shanepark.coresecurity.security.common.FormWebAuthenticationDetails
 import com.tistory.shanepark.coresecurity.security.service.AccountContext
+import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.InsufficientAuthenticationException
@@ -14,6 +15,8 @@ class CustomAuthenticationProvider(
     private val userDetailsService: UserDetailsService,
     private val passwordEncoder: PasswordEncoder,
 ) : AuthenticationProvider {
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun authenticate(authentication: Authentication): Authentication {
         val username = authentication.name
@@ -28,7 +31,12 @@ class CustomAuthenticationProvider(
         val secretKey = formWebAuthenticationDetails.secretKey
 
         if ("secret" != secretKey) {
-            // but even if it throws Exception, it succeeds login process on second try...
+            log.info("Secret key is not valid. secretKey=$secretKey")
+            /**
+             * but even if it throws Exception, it succeeds login process
+             * the difference is if it throws InsufficientException, authentication.principal is userDetails.User
+             * if not, principal is Account
+             */
             throw InsufficientAuthenticationException("InsufficientAuthenticationException")
         }
 
