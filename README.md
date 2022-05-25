@@ -28,3 +28,7 @@ Catch up with Spring security online class with Kotlin (11.MAY.2022~)
 - 21 Hours Spring Security online lecture originally written in java
 - Goal: Getting used to Kotlin and learn spring-security at the same time
 - First time writting Kotlin code myself not following someone
+
+Blog posts
+
+- [Kotlin) Data class 에 기본 생성자 만들기](https://shanepark.tistory.com/374)
