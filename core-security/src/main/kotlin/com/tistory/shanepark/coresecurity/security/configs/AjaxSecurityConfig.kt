@@ -1,7 +1,6 @@
 package com.tistory.shanepark.coresecurity.security.configs
 
 import com.tistory.shanepark.coresecurity.security.common.AjaxLoginAuthenticationEntryPoint
-import com.tistory.shanepark.coresecurity.security.filter.AjaxLoginProcessingFilter
 import com.tistory.shanepark.coresecurity.security.handler.AjaxAccessDeniedHandler
 import com.tistory.shanepark.coresecurity.security.handler.AjaxAuthenticationFailureHandler
 import com.tistory.shanepark.coresecurity.security.handler.AjaxAuthenticationSuccessHandler
@@ -19,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
@@ -44,29 +42,41 @@ class AjaxSecurityConfig(
             .authorizeRequests()
             .antMatchers("/api/messages")
             .hasRole("MANAGER")
-            .anyRequest().authenticated().and()
+            .anyRequest().authenticated()
 
-            .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
-            .csrf().disable()
-
+            .and()
             .exceptionHandling()
             .authenticationEntryPoint(AjaxLoginAuthenticationEntryPoint())
             .accessDeniedHandler(ajaxAccessDeniedHandler())
 
+            .and()
+//            .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
+            .csrf().disable()
+
+        customConfigurerAjax(http);
+
+    }
+
+    private fun customConfigurerAjax(http: HttpSecurity) {
+        http
+            .apply(AjaxLoginConfigurer(ajaxAuthenticationSuccessHandler(),
+                ajaxAuthenticationFailureHandler(),
+                authenticationManagerBean()))
+            .loginProcessingUrl("/api/login")
     }
 
     private fun ajaxAccessDeniedHandler(): AccessDeniedHandler {
         return AjaxAccessDeniedHandler()
     }
 
-    @Bean
-    fun ajaxLoginProcessingFilter(): AjaxLoginProcessingFilter {
-        val ajaxLoginProcessingFilter = AjaxLoginProcessingFilter()
-        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBean())
-        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler())
-        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler())
-        return ajaxLoginProcessingFilter
-    }
+//    @Bean
+//    fun ajaxLoginProcessingFilter(): AjaxLoginProcessingFilter {
+//        val ajaxLoginProcessingFilter = AjaxLoginProcessingFilter()
+//        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBean())
+//        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler())
+//        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler())
+//        return ajaxLoginProcessingFilter
+//    }
 
     @Bean
     fun ajaxAuthenticationSuccessHandler(): AuthenticationSuccessHandler {
