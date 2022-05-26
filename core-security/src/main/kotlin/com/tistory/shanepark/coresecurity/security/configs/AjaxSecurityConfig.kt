@@ -1,6 +1,8 @@
 package com.tistory.shanepark.coresecurity.security.configs
 
+import com.tistory.shanepark.coresecurity.security.common.AjaxLoginAuthenticationEntryPoint
 import com.tistory.shanepark.coresecurity.security.filter.AjaxLoginProcessingFilter
+import com.tistory.shanepark.coresecurity.security.handler.AjaxAccessDeniedHandler
 import com.tistory.shanepark.coresecurity.security.handler.AjaxAuthenticationFailureHandler
 import com.tistory.shanepark.coresecurity.security.handler.AjaxAuthenticationSuccessHandler
 import com.tistory.shanepark.coresecurity.security.provider.AjaxAuthenticationProvider
@@ -14,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
@@ -39,10 +42,21 @@ class AjaxSecurityConfig(
         http
             .antMatcher("/api/**")
             .authorizeRequests()
+            .antMatchers("/api/messages")
+            .hasRole("MANAGER")
             .anyRequest().authenticated().and()
 
             .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
             .csrf().disable()
+
+            .exceptionHandling()
+            .authenticationEntryPoint(AjaxLoginAuthenticationEntryPoint())
+            .accessDeniedHandler(ajaxAccessDeniedHandler())
+
+    }
+
+    private fun ajaxAccessDeniedHandler(): AccessDeniedHandler {
+        return AjaxAccessDeniedHandler()
     }
 
     @Bean
