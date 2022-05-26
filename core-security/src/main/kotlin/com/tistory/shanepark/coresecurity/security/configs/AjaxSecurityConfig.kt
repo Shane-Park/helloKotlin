@@ -1,6 +1,8 @@
 package com.tistory.shanepark.coresecurity.security.configs
 
 import com.tistory.shanepark.coresecurity.security.filter.AjaxLoginProcessingFilter
+import com.tistory.shanepark.coresecurity.security.handler.AjaxAuthenticationFailureHandler
+import com.tistory.shanepark.coresecurity.security.handler.AjaxAuthenticationSuccessHandler
 import com.tistory.shanepark.coresecurity.security.provider.AjaxAuthenticationProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -12,6 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
@@ -45,6 +49,18 @@ class AjaxSecurityConfig(
     fun ajaxLoginProcessingFilter(): AjaxLoginProcessingFilter {
         val ajaxLoginProcessingFilter = AjaxLoginProcessingFilter()
         ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBean())
+        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler())
+        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler())
         return ajaxLoginProcessingFilter
+    }
+
+    @Bean
+    fun ajaxAuthenticationSuccessHandler(): AuthenticationSuccessHandler {
+        return AjaxAuthenticationSuccessHandler()
+    }
+
+    @Bean
+    fun ajaxAuthenticationFailureHandler(): AuthenticationFailureHandler {
+        return AjaxAuthenticationFailureHandler()
     }
 }
