@@ -1,14 +1,14 @@
 package com.tistory.shanepark.coresecurity.security.configs
 
 import com.tistory.shanepark.coresecurity.security.common.FormAuthenticationDetailsSource
-import com.tistory.shanepark.coresecurity.security.filter.AjaxLoginProcessingFilter
 import com.tistory.shanepark.coresecurity.security.handler.CustomAccessDeniedHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationFailureHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationSuccessHandler
-import com.tistory.shanepark.coresecurity.security.provider.CustomAuthenticationProvider
+import com.tistory.shanepark.coresecurity.security.provider.FormAuthenticationProvider
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -19,10 +19,10 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.access.AccessDeniedHandler
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
+@Order(1)
 class SecurityConfig(
     private val userDetailService: UserDetailsService,
     private val formWebAuthenticationDetailsSource: FormAuthenticationDetailsSource,
@@ -45,7 +45,7 @@ class SecurityConfig(
     }
 
     private fun authenticationProvider(): AuthenticationProvider? {
-        return CustomAuthenticationProvider(userDetailService, passwordEncoder())
+        return FormAuthenticationProvider(userDetailService, passwordEncoder())
     }
 
     @Bean
@@ -72,10 +72,8 @@ class SecurityConfig(
             .permitAll().and()
 
             .exceptionHandling()
-            .accessDeniedHandler(accessDeniedHandler()).and()
+            .accessDeniedHandler(accessDeniedHandler())
 
-            .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
-            .csrf().disable()
     }
 
     @Bean
@@ -83,10 +81,5 @@ class SecurityConfig(
         return CustomAccessDeniedHandler("/denied")
     }
 
-    @Bean
-    fun ajaxLoginProcessingFilter(): AjaxLoginProcessingFilter {
-        val ajaxLoginProcessingFilter = AjaxLoginProcessingFilter()
-        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBean())
-        return ajaxLoginProcessingFilter
-    }
+
 }
