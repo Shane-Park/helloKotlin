@@ -5,6 +5,7 @@ import com.tistory.shanepark.coresecurity.security.handler.CustomAccessDeniedHan
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationFailureHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationSuccessHandler
 import com.tistory.shanepark.coresecurity.security.provider.FormAuthenticationProvider
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -29,6 +30,7 @@ class SecurityConfig(
     private val formAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler,
     private val formAuthenticationFailureHandler: CustomAuthenticationFailureHandler,
 ) : WebSecurityConfigurerAdapter() {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun configure(web: WebSecurity) {
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations())
@@ -54,6 +56,7 @@ class SecurityConfig(
     }
 
     override fun configure(http: HttpSecurity) {
+        log.info("SecurityConfig.kt configure")
         http
             .authorizeRequests()
             .antMatchers("/", "/user/login/**", "/login*").permitAll()

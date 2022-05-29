@@ -5,6 +5,7 @@ import com.tistory.shanepark.coresecurity.security.handler.AjaxAccessDeniedHandl
 import com.tistory.shanepark.coresecurity.security.handler.AjaxAuthenticationFailureHandler
 import com.tistory.shanepark.coresecurity.security.handler.AjaxAuthenticationSuccessHandler
 import com.tistory.shanepark.coresecurity.security.provider.AjaxAuthenticationProvider
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -26,6 +27,7 @@ class AjaxSecurityConfig(
     private val userDetailService: UserDetailsService,
     private val passwordEncoder: PasswordEncoder,
 ) : WebSecurityConfigurerAdapter() {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun configure(auth: AuthenticationManagerBuilder?) {
         auth?.authenticationProvider(ajaxAuthenticationProvider())
@@ -37,11 +39,13 @@ class AjaxSecurityConfig(
     }
 
     override fun configure(http: HttpSecurity) {
+        log.info("AjaxSecurityConfig.kt configure")
+
         http
             .antMatcher("/api/**")
             .authorizeRequests()
-            .antMatchers("/api/messages")
-            .hasRole("MANAGER")
+            .antMatchers("/api/messages").hasRole("MANAGER")
+            .antMatchers("/api/login").permitAll()
             .anyRequest().authenticated()
 
             .and()
@@ -51,7 +55,7 @@ class AjaxSecurityConfig(
 
             .and()
 //            .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter::class.java)
-            .csrf().disable()
+//            .csrf().disable()
 
         customConfigurerAjax(http);
 
