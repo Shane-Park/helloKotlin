@@ -1,7 +1,7 @@
 package com.tistory.shanepark.coresecurity.security.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.tistory.shanepark.coresecurity.domain.Account
+import com.tistory.shanepark.coresecurity.domain.entity.Account
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType

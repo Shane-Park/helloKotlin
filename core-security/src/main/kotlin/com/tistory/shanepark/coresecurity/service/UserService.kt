@@ -1,7 +1,6 @@
 package com.tistory.shanepark.coresecurity.service
 
-import com.tistory.shanepark.coresecurity.domain.Account
-import com.tistory.shanepark.coresecurity.repository.UserRepository
+import com.tistory.shanepark.coresecurity.domain.entity.Account
 
 interface UserService {
 

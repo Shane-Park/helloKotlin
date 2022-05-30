@@ -1,6 +1,6 @@
 package com.tistory.shanepark.coresecurity.repository
 
-import com.tistory.shanepark.coresecurity.domain.Account
+import com.tistory.shanepark.coresecurity.domain.entity.Account
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserRepository : JpaRepository<Account, Long> {

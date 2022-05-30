@@ -1,6 +1,6 @@
-package com.tistory.shanepark.coresecurity.security.service
+package com.tistory.shanepark.coresecurity.service
 
-import com.tistory.shanepark.coresecurity.domain.Account
+import com.tistory.shanepark.coresecurity.domain.entity.Account
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.User
 

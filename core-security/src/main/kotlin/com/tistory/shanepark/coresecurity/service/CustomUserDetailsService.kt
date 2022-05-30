@@ -1,4 +1,4 @@
-package com.tistory.shanepark.coresecurity.security.service
+package com.tistory.shanepark.coresecurity.service
 
 import com.tistory.shanepark.coresecurity.repository.UserRepository
 import org.springframework.security.core.GrantedAuthority

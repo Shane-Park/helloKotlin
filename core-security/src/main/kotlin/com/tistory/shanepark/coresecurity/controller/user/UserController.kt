@@ -1,7 +1,7 @@
 package com.tistory.shanepark.coresecurity.controller.user
 
-import com.tistory.shanepark.coresecurity.domain.Account
-import com.tistory.shanepark.coresecurity.domain.AccountDto
+import com.tistory.shanepark.coresecurity.domain.entity.Account
+import com.tistory.shanepark.coresecurity.domain.dto.AccountDto
 import com.tistory.shanepark.coresecurity.service.UserService
 import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.password.PasswordEncoder

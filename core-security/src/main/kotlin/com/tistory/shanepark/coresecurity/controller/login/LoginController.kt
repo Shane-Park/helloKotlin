@@ -1,6 +1,6 @@
 package com.tistory.shanepark.coresecurity.controller.login
 
-import com.tistory.shanepark.coresecurity.domain.Account
+import com.tistory.shanepark.coresecurity.domain.entity.Account
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler
 import org.springframework.stereotype.Controller

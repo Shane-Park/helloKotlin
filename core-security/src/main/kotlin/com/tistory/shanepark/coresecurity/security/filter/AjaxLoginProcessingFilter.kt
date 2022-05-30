@@ -1,7 +1,7 @@
 package com.tistory.shanepark.coresecurity.security.filter
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.tistory.shanepark.coresecurity.domain.AccountDto
+import com.tistory.shanepark.coresecurity.domain.dto.AccountDto
 import com.tistory.shanepark.coresecurity.security.token.AjaxAuthenticationToken
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.Authentication

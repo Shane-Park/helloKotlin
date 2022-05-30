@@ -1,8 +1,7 @@
-package com.tistory.shanepark.coresecurity.domain
+package com.tistory.shanepark.coresecurity.domain.entity
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import com.tistory.shanepark.coresecurity.domain.dto.AccountDto
+import javax.persistence.*
 
 @Entity
 class Account(
@@ -10,7 +9,7 @@ class Account(
     password: String?,
     email: String?,
     age: Int?,
-    role: String?,
+    role: Set<Role>?,
 ) {
     constructor() : this(null, null, null, null, null)
 
@@ -21,7 +20,12 @@ class Account(
     var password: String? = password
     var email: String? = email
     var age: Int? = age
-    var role: String? = role
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @JoinTable(name = "account_roles",
+        joinColumns = [JoinColumn(name = "account_id")],
+        inverseJoinColumns = [JoinColumn(name = "role_id")])
+    var role: Set<Role>? = role
 
     companion object {
         fun fromDto(dto: AccountDto): Account {
