@@ -3,6 +3,7 @@ package com.tistory.shanepark.coresecurity.controller.admin
 import com.tistory.shanepark.coresecurity.domain.dto.RoleDto
 import com.tistory.shanepark.coresecurity.domain.entity.Role
 import com.tistory.shanepark.coresecurity.service.RoleService
+import org.modelmapper.ModelMapper
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping

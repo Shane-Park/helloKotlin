@@ -1,7 +1,7 @@
 package com.tistory.shanepark.coresecurity.security.provider
 
 import com.tistory.shanepark.coresecurity.security.common.FormWebAuthenticationDetails
-import com.tistory.shanepark.coresecurity.service.AccountContext
+import com.tistory.shanepark.coresecurity.security.service.AccountContext
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.BadCredentialsException
