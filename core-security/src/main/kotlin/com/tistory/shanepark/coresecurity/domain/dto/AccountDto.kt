@@ -5,7 +5,7 @@ import com.tistory.shanepark.coresecurity.domain.entity.Account
 
 
 data class AccountDto(
-    @JsonProperty("id") val id: String,
+    @JsonProperty("id") val id: String?,
     @JsonProperty("username") val username: String,
     @JsonProperty("password") var password: String,
     @JsonProperty("email") val email: String?,
@@ -20,6 +20,6 @@ data class AccountDto(
     }
 
     fun toAccount(): Account {
-        return Account(this.username, this.password, this.email, this.age, null)
+        return Account(this.id?.toLong(), this.username, this.password, this.email, this.age, null)
     }
 }

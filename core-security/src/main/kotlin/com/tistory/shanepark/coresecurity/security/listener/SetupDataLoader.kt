@@ -58,7 +58,7 @@ class SetupDataLoader(
     ): Account {
         var account: Account? = userRepository.findByUsername(userName)
         if (account == null) {
-            account = Account(userName, passwordEncoder.encode(password), email, age, roleSet)
+            account = Account(null, userName, passwordEncoder.encode(password), email, age, roleSet)
         }
         return userRepository.save(account)
     }

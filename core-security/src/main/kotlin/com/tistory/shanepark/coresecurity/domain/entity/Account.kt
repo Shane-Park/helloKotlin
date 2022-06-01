@@ -5,17 +5,18 @@ import javax.persistence.*
 
 @Entity
 class Account(
+    id: Long ?,
     username: String,
     password: String,
     email: String?,
     age: Int?,
     roles: Set<Role>?,
 ) {
-    constructor() : this("", "", null, null, null)
+    constructor() : this(null,"", "", null, null, null)
 
     @Id
     @GeneratedValue
-    var id: Long? = null
+    var id: Long? = id
     var username: String = username
     var password: String = password
     var email: String? = email

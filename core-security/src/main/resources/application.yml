@@ -7,11 +7,11 @@ spring:
         livereload:
             enabled: true
         restart:
-            enabled: true
+            enabled: false
     jpa:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
         hibernate:
-            ddl-auto: create
+            ddl-auto: update
         properties:
             hibernate:
                 format_sql: false

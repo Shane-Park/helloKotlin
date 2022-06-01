@@ -41,9 +41,9 @@ class SecurityConfig(
         auth.authenticationProvider(authenticationProvider())
 
         val password = passwordEncoder().encode("1234")
-        auth.inMemoryAuthentication().withUser("user").password(password).roles("USER")
-        auth.inMemoryAuthentication().withUser("manager").password(password).roles("MANAGER")
-        auth.inMemoryAuthentication().withUser("admin").password(password).roles("ADMIN")
+//        auth.inMemoryAuthentication().withUser("user").password(password).roles("USER")
+//        auth.inMemoryAuthentication().withUser("manager").password(password).roles("MANAGER")
+//        auth.inMemoryAuthentication().withUser("admin").password(password).roles("ADMIN")
     }
 
     private fun authenticationProvider(): AuthenticationProvider? {
@@ -63,6 +63,7 @@ class SecurityConfig(
             .antMatchers("/mypage").hasRole("USER")
             .antMatchers("/messages").hasRole("MANAGER")
             .antMatchers("/config").hasRole("ADMIN")
+            .antMatchers("/**").permitAll()
             .anyRequest().authenticated().and()
 
             .formLogin()

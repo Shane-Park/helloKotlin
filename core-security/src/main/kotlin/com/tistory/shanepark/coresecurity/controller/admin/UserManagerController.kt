@@ -35,6 +35,7 @@ class UserManagerController(
     fun getUser(@PathVariable(value = "id") id: Long, model: Model): String {
         val accountDto: AccountDto? = userService.getUser(id)
         val roleList: List<Role?>? = roleService.getRoles()
+
         model.addAttribute("account", accountDto)
         model.addAttribute("roleList", roleList)
         return "admin/user/detail"
