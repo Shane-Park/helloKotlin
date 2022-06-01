@@ -3,7 +3,6 @@ package com.tistory.shanepark.coresecurity.controller.admin
 import com.tistory.shanepark.coresecurity.domain.dto.RoleDto
 import com.tistory.shanepark.coresecurity.domain.entity.Role
 import com.tistory.shanepark.coresecurity.service.RoleService
-import org.modelmapper.ModelMapper
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -29,9 +28,8 @@ class RoleController(
     }
 
     @PostMapping(value = ["/admin/roles"])
-    fun createRole(roleDto: RoleDto?): String {
-        val modelMapper = ModelMapper()
-        val role: Role = modelMapper.map(roleDto, Role::class.java)
+    fun createRole(roleDto: RoleDto): String {
+        val role: Role = roleDto.toRole()
         roleService.createRole(role)
         return "redirect:/admin/roles"
     }
@@ -39,8 +37,7 @@ class RoleController(
     @GetMapping(value = ["/admin/roles/{id}"])
     fun getRole(@PathVariable id: String?, model: Model): String {
         val role: Role? = roleService.getRole(java.lang.Long.valueOf(id))
-        val modelMapper = ModelMapper()
-        val roleDto: RoleDto = modelMapper.map(role, RoleDto::class.java)
+        val roleDto: RoleDto? = role?.let { RoleDto.fromRole(it) }
         model.addAttribute("role", roleDto)
         return "admin/role/detail"
     }

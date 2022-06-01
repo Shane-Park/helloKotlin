@@ -32,7 +32,7 @@ class SetupDataLoader(
     }
 
     private fun setupSecurityResources() {
-        val roles: MutableSet<Role> = HashSet<Role>()
+        val roles: MutableSet<Role> = HashSet()
         val adminRole: Role = createRoleIfNotFound("ROLE_ADMIN", "관리자")
         roles.add(adminRole)
         createResourceIfNotFound("/admin/**", "", roles, "url")

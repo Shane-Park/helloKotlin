@@ -6,7 +6,6 @@ import com.tistory.shanepark.coresecurity.domain.entity.Role
 import com.tistory.shanepark.coresecurity.repository.RoleRepository
 import com.tistory.shanepark.coresecurity.repository.UserRepository
 import com.tistory.shanepark.coresecurity.service.UserService
-import org.modelmapper.ModelMapper
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -35,8 +34,7 @@ class UserServiceImpl(
 
     @Transactional
     override fun modifyUser(accountDto: AccountDto) {
-        val modelMapper = ModelMapper()
-        val account = modelMapper.map(accountDto, Account::class.java)
+        val account = accountDto.toAccount()
         if (accountDto.roles != null) {
             val roles: MutableSet<Role> = HashSet()
             accountDto.roles!!.forEach { role ->
@@ -54,8 +52,7 @@ class UserServiceImpl(
     @Transactional
     override fun getUser(id: Long): AccountDto? {
         val account = userRepository.findById(id).orElse(Account())
-        val modelMapper = ModelMapper()
-        val accountDto = modelMapper.map(account, AccountDto::class.java)
+        val accountDto = AccountDto.fromAccount(account)
         val roles: MutableList<String>? = account.userRoles
             ?.stream()
             ?.map { role -> role.roleName }

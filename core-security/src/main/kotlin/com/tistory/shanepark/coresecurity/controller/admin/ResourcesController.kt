@@ -6,7 +6,6 @@ import com.tistory.shanepark.coresecurity.domain.entity.Role
 import com.tistory.shanepark.coresecurity.repository.RoleRepository
 import com.tistory.shanepark.coresecurity.service.ResourcesService
 import com.tistory.shanepark.coresecurity.service.RoleService
-import org.modelmapper.ModelMapper
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -29,11 +28,10 @@ class ResourcesController(
 
     @PostMapping(value = ["/admin/resources"])
     fun createResources(resourcesDto: ResourcesDto): String {
-        val modelMapper = ModelMapper()
-        val role: Role? = roleRepository.findByRoleName(resourcesDto.roleName)
+        val role: Role? = roleRepository.findByRoleName(resourcesDto.roleName!!)
         val roles: MutableSet<Role> = HashSet()
         role?.let { roles.add(it) }
-        val resources: Resources = modelMapper.map(resourcesDto, Resources::class.java)
+        val resources: Resources = resourcesDto.toResource()
         resources.roleSet = roles
         resourcesService.createResources(resources)
 
@@ -57,8 +55,7 @@ class ResourcesController(
         val roleList: List<Role>? = roleService.getRoles()
         model.addAttribute("roleList", roleList)
         val resources: Resources? = resourcesService.getResources(java.lang.Long.valueOf(id))
-        val modelMapper = ModelMapper()
-        val resourcesDto: ResourcesDto = modelMapper.map(resources, ResourcesDto::class.java)
+        val resourcesDto: ResourcesDto? = resources?.let { ResourcesDto.fromResources(it) }
         model.addAttribute("resources", resourcesDto)
         return "admin/resource/detail"
     }
