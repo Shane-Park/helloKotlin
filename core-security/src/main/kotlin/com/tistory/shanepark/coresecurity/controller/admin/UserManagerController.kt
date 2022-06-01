@@ -19,22 +19,22 @@ class UserManagerController(
     @GetMapping(value = ["/admin/accounts"])
     @Throws(Exception::class)
     fun getUsers(model: Model): String {
-        val accounts: List<Account> = userService.getUsers()
+        val accounts: List<Account?>? = userService.getUsers()
         model.addAttribute("accounts", accounts)
         return "admin/user/list"
     }
 
     @PostMapping(value = ["/admin/accounts"])
     @Throws(Exception::class)
-    fun modifyUser(accountDto: AccountDto?): String {
-//        userService.modifyUser(accountDto)
+    fun modifyUser(accountDto: AccountDto): String {
+        userService.modifyUser(accountDto)
         return "redirect:/admin/accounts"
     }
 
     @GetMapping(value = ["/admin/accounts/{id}"])
     fun getUser(@PathVariable(value = "id") id: Long, model: Model): String {
-        val accountDto: AccountDto ?= userService.getUser(id)
-        val roleList: MutableList<Role?> = roleService.roles
+        val accountDto: AccountDto? = userService.getUser(id)
+        val roleList: List<Role?>? = roleService.getRoles()
         model.addAttribute("account", accountDto)
         model.addAttribute("roleList", roleList)
         return "admin/user/detail"

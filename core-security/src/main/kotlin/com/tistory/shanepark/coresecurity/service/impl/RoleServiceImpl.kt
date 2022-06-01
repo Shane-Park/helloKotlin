@@ -8,15 +8,15 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class RoleServiceImpl(private val roleRepository: RoleRepository) : RoleService {
-
     @Transactional
     override fun getRole(id: Long): Role? {
         return roleRepository.findById(id).orElse(Role())
     }
 
-    @get:Transactional
-    override val roles: MutableList<Role?>
-        get() = roleRepository.findAll()
+    @Transactional
+    override fun getRoles(): List<Role>? {
+        return roleRepository.findAll()
+    }
 
     @Transactional
     override fun createRole(role: Role) {

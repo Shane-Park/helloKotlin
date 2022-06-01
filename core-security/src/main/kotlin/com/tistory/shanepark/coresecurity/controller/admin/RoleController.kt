@@ -15,23 +15,20 @@ class RoleController(
     private val roleService: RoleService,
 ) {
     @GetMapping(value = ["/admin/roles"])
-    @Throws(Exception::class)
     fun getRoles(model: Model): String {
-        val roles: List<Role> = roleService.roles as List<Role>
+        val roles: List<Role>? = roleService.getRoles()
         model.addAttribute("roles", roles)
         return "admin/role/list"
     }
 
     @GetMapping(value = ["/admin/roles/register"])
-    @Throws(Exception::class)
-    fun viewRoles(model: Model): String {
+    fun viewRoles(model: Model): String? {
         val role = RoleDto()
         model.addAttribute("role", role)
         return "admin/role/detail"
     }
 
     @PostMapping(value = ["/admin/roles"])
-    @Throws(Exception::class)
     fun createRole(roleDto: RoleDto?): String {
         val modelMapper = ModelMapper()
         val role: Role = modelMapper.map(roleDto, Role::class.java)
@@ -40,7 +37,6 @@ class RoleController(
     }
 
     @GetMapping(value = ["/admin/roles/{id}"])
-    @Throws(Exception::class)
     fun getRole(@PathVariable id: String?, model: Model): String {
         val role: Role? = roleService.getRole(java.lang.Long.valueOf(id))
         val modelMapper = ModelMapper()
@@ -50,7 +46,6 @@ class RoleController(
     }
 
     @GetMapping(value = ["/admin/roles/delete/{id}"])
-    @Throws(Exception::class)
     fun removeResources(@PathVariable id: String?, model: Model?): String {
         val role: Role? = roleService.getRole(java.lang.Long.valueOf(id))
         roleService.deleteRole(java.lang.Long.valueOf(id))

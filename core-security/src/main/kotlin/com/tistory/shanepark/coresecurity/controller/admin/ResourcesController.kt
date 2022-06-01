@@ -22,7 +22,7 @@ class ResourcesController(
 
     @GetMapping(value = ["/admin/resources"])
     fun getResources(model: Model): String {
-        val resources: MutableList<Resources?> = resourcesService.resources
+        val resources: List<Resources?>? = resourcesService.getResources()
         model.addAttribute("resources", resources)
         return "admin/resource/list"
     }
@@ -42,10 +42,10 @@ class ResourcesController(
 
     @GetMapping(value = ["/admin/resources/register"])
     fun viewRoles(model: Model): String {
-        val roleList: MutableList<Role?> = roleService.roles
+        val roleList: List<Role>? = roleService.getRoles()
         model.addAttribute("roleList", roleList)
         val resources = ResourcesDto()
-        val roleSet: MutableSet<Role> = HashSet<Role>()
+        val roleSet: MutableSet<Role> = HashSet()
         roleSet.add(Role())
         resources.roleSet = roleSet
         model.addAttribute("resources", resources)
@@ -54,7 +54,7 @@ class ResourcesController(
 
     @GetMapping(value = ["/admin/resources/{id}"])
     fun getResources(@PathVariable id: String?, model: Model): String {
-        val roleList: MutableList<Role?> = roleService.roles
+        val roleList: List<Role>? = roleService.getRoles()
         model.addAttribute("roleList", roleList)
         val resources: Resources? = resourcesService.getResources(java.lang.Long.valueOf(id))
         val modelMapper = ModelMapper()

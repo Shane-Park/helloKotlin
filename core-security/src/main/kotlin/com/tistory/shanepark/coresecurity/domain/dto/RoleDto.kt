@@ -1,9 +1,11 @@
 package com.tistory.shanepark.coresecurity.domain.dto
 
-data class RoleDto(
-    private var id: String? = null,
-    private var roleName: String? = null,
-    private var roleDesc: String? = null,
-) {
+import com.fasterxml.jackson.annotation.JsonProperty
 
+data class RoleDto(
+    @JsonProperty val id: String?,
+    @JsonProperty val roleName: String?,
+    @JsonProperty val roleDesc: String?,
+) {
+    constructor() : this("", "", "")
 }

@@ -9,7 +9,7 @@ class Account(
     password: String,
     email: String?,
     age: Int?,
-    roles: MutableSet<Role>?,
+    roles: Set<Role>?,
 ) {
     constructor() : this("", "", null, null, null)
 
@@ -27,7 +27,7 @@ class Account(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
-    var userRoles: MutableSet<Role>? = roles
+    var userRoles: Set<Role>? = roles
 
     companion object {
         fun fromDto(dto: AccountDto): Account {

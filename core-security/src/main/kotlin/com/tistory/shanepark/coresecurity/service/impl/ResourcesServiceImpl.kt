@@ -16,9 +16,10 @@ class ResourcesServiceImpl(
         return ResourcesRepository.findById(id).orElse(Resources())
     }
 
-    @get:Transactional
-    override val resources: MutableList<Resources?>
-        get() = ResourcesRepository.findAll(Sort.by(Sort.Order.asc("orderNum")))
+    @Transactional
+    override fun getResources(): List<Resources?>? {
+        return ResourcesRepository.findAll(Sort.by(Sort.Order.asc("orderNum")))
+    }
 
     @Transactional
     override fun createResources(resources: Resources) {

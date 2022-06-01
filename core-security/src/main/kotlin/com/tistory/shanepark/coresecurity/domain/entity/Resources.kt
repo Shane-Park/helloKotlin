@@ -19,7 +19,7 @@ class Resources(
     @Id
     @GeneratedValue
     @Column(name = "resource_id")
-    private var id: Long? = null
+    var id: Long? = null
 
     @Column(name = "resource_name")
     var resourceName: String? = resourceName
