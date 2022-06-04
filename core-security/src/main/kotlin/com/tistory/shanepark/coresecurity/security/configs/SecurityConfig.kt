@@ -4,12 +4,16 @@ import com.tistory.shanepark.coresecurity.security.common.FormAuthenticationDeta
 import com.tistory.shanepark.coresecurity.security.handler.CustomAccessDeniedHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationFailureHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationSuccessHandler
+import com.tistory.shanepark.coresecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource
 import com.tistory.shanepark.coresecurity.security.provider.FormAuthenticationProvider
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.security.access.AccessDecisionManager
+import org.springframework.security.access.vote.AffirmativeBased
+import org.springframework.security.access.vote.RoleVoter
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -20,6 +24,8 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.access.AccessDeniedHandler
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
 
 @Configuration
 @EnableWebSecurity
@@ -64,8 +70,9 @@ class SecurityConfig(
             .antMatchers("/messages").hasRole("MANAGER")
             .antMatchers("/config").hasRole("ADMIN")
             .antMatchers("/**").permitAll()
-            .anyRequest().authenticated().and()
+            .anyRequest().authenticated()
 
+            .and()
             .formLogin()
             .loginPage("/login")
             .loginProcessingUrl("/login_proc")
@@ -73,16 +80,43 @@ class SecurityConfig(
             .defaultSuccessUrl("/")
             .successHandler(formAuthenticationSuccessHandler)
             .failureHandler(formAuthenticationFailureHandler)
-            .permitAll().and()
+            .permitAll()
 
+            .and()
             .exceptionHandling()
             .accessDeniedHandler(accessDeniedHandler())
+
+            .and()
+            .addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor::class.java)
 
     }
 
     @Bean
     fun accessDeniedHandler(): AccessDeniedHandler? {
         return CustomAccessDeniedHandler("/denied")
+    }
+
+    @Bean
+    fun urlFilterInvocationSecurityMetadataSource(): FilterInvocationSecurityMetadataSource? {
+        return UrlFilterInvocationSecurityMetadataSource()
+    }
+
+
+    private fun affirmativeBased(): AccessDecisionManager? {
+        return AffirmativeBased(getAccessDecisionVoters())
+    }
+
+    private fun getAccessDecisionVoters(): List<RoleVoter> {
+        return listOf(RoleVoter())
+    }
+
+    @Bean
+    fun customFilterSecurityInterceptor(): FilterSecurityInterceptor {
+        val filterSecurityInterceptor = FilterSecurityInterceptor()
+        filterSecurityInterceptor.securityMetadataSource = urlFilterInvocationSecurityMetadataSource();
+        filterSecurityInterceptor.accessDecisionManager = affirmativeBased();
+        filterSecurityInterceptor.authenticationManager = authenticationManagerBean()
+        return filterSecurityInterceptor;
     }
 
 
