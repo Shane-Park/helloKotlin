@@ -2,9 +2,8 @@ package com.tistory.shanepark.coresecurity.security.configs
 
 import com.tistory.shanepark.coresecurity.security.common.FormAuthenticationDetailsSource
 import com.tistory.shanepark.coresecurity.security.factory.UrlResourcesMapFactoryBean
-import com.tistory.shanepark.coresecurity.security.handler.CustomAccessDeniedHandler
-import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationFailureHandler
-import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationSuccessHandler
+import com.tistory.shanepark.coresecurity.security.filter.PermitAllFilter
+import com.tistory.shanepark.coresecurity.security.handler.*
 import com.tistory.shanepark.coresecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource
 import com.tistory.shanepark.coresecurity.security.provider.FormAuthenticationProvider
 import com.tistory.shanepark.coresecurity.service.SecurityResourceService
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.annotation.Order
 import org.springframework.security.access.AccessDecisionManager
 import org.springframework.security.access.vote.AffirmativeBased
 import org.springframework.security.access.vote.RoleVoter
@@ -28,10 +26,12 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 
 @Configuration
 @EnableWebSecurity
-@Order(1)
 class SecurityConfig(
     private val userDetailService: UserDetailsService,
     private val formWebAuthenticationDetailsSource: FormAuthenticationDetailsSource,
@@ -39,7 +39,9 @@ class SecurityConfig(
     private val formAuthenticationFailureHandler: CustomAuthenticationFailureHandler,
     private val securityResourceService: SecurityResourceService,
 ) : WebSecurityConfigurerAdapter() {
+
     private val log = LoggerFactory.getLogger(javaClass)
+    private val permitAllResources: Array<String> = arrayOf("/", "/login", "/user/login/**", "/mypage")
 
     override fun configure(web: WebSecurity) {
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations())
@@ -68,11 +70,6 @@ class SecurityConfig(
         log.info("SecurityConfig.kt configure")
         http
             .authorizeRequests()
-            .antMatchers("/", "/user/login/**", "/login*").permitAll()
-            .antMatchers("/mypage").hasRole("USER")
-            .antMatchers("/messages").hasRole("MANAGER")
-            .antMatchers("/config").hasRole("ADMIN")
-            .antMatchers("/**").permitAll()
             .anyRequest().authenticated()
 
             .and()
@@ -80,18 +77,39 @@ class SecurityConfig(
             .loginPage("/login")
             .loginProcessingUrl("/login_proc")
             .authenticationDetailsSource(formWebAuthenticationDetailsSource)
-            .defaultSuccessUrl("/")
             .successHandler(formAuthenticationSuccessHandler)
             .failureHandler(formAuthenticationFailureHandler)
             .permitAll()
 
             .and()
             .exceptionHandling()
+            .authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/login"))
+            .accessDeniedPage("/denied")
             .accessDeniedHandler(accessDeniedHandler())
 
             .and()
-            .addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor::class.java)
+            .addFilterAt(customFilterSecurityInterceptor(), FilterSecurityInterceptor::class.java)
 
+        http.csrf().disable()
+        customConfigurerAjax(http)
+    }
+
+    private fun customConfigurerAjax(http: HttpSecurity) {
+        http
+            .apply(AjaxLoginConfigurer(ajaxAuthenticationSuccessHandler(),
+                ajaxAuthenticationFailureHandler(),
+                authenticationManagerBean()))
+            .loginProcessingUrl("/api/login")
+    }
+
+    @Bean
+    fun ajaxAuthenticationSuccessHandler(): AuthenticationSuccessHandler {
+        return AjaxAuthenticationSuccessHandler()
+    }
+
+    @Bean
+    fun ajaxAuthenticationFailureHandler(): AuthenticationFailureHandler {
+        return AjaxAuthenticationFailureHandler()
     }
 
     @Bean
@@ -121,12 +139,12 @@ class SecurityConfig(
     }
 
     @Bean
-    fun customFilterSecurityInterceptor(): FilterSecurityInterceptor {
-        val filterSecurityInterceptor = FilterSecurityInterceptor()
-        filterSecurityInterceptor.securityMetadataSource = urlFilterInvocationSecurityMetadataSource();
-        filterSecurityInterceptor.accessDecisionManager = affirmativeBased();
-        filterSecurityInterceptor.authenticationManager = authenticationManagerBean()
-        return filterSecurityInterceptor;
+    fun customFilterSecurityInterceptor(): PermitAllFilter {
+        val permitAllFilter = PermitAllFilter(permitAllResources)
+        permitAllFilter.securityMetadataSource = urlFilterInvocationSecurityMetadataSource();
+        permitAllFilter.accessDecisionManager = affirmativeBased();
+        permitAllFilter.authenticationManager = authenticationManagerBean()
+        return permitAllFilter;
     }
 
 
