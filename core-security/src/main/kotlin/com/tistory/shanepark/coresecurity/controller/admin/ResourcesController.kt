@@ -4,8 +4,10 @@ import com.tistory.shanepark.coresecurity.domain.dto.ResourcesDto
 import com.tistory.shanepark.coresecurity.domain.entity.Resources
 import com.tistory.shanepark.coresecurity.domain.entity.Role
 import com.tistory.shanepark.coresecurity.repository.RoleRepository
+import com.tistory.shanepark.coresecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource
 import com.tistory.shanepark.coresecurity.service.ResourcesService
 import com.tistory.shanepark.coresecurity.service.RoleService
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,6 +19,7 @@ class ResourcesController(
     private val resourcesService: ResourcesService,
     private val roleRepository: RoleRepository,
     private val roleService: RoleService,
+    private val filterInvocationSecurityMetadataSource: FilterInvocationSecurityMetadataSource,
 ) {
 
     @GetMapping(value = ["/admin/resources"])
@@ -34,6 +37,8 @@ class ResourcesController(
         val resources: Resources = resourcesDto.toResource()
         resources.roleSet = roles
         resourcesService.createResources(resources)
+
+        reloadRequestMap()
 
         return "redirect:/admin/resources"
     }
@@ -65,7 +70,12 @@ class ResourcesController(
     fun removeResources(@PathVariable id: String?, model: Model?): String {
         val resources: Resources? = resourcesService.getResources(java.lang.Long.valueOf(id))
         resourcesService.deleteResources(java.lang.Long.valueOf(id))
+        reloadRequestMap()
 
         return "redirect:/admin/resources"
+    }
+
+    private fun reloadRequestMap() {
+        (filterInvocationSecurityMetadataSource as UrlFilterInvocationSecurityMetadataSource).reload()
     }
 }

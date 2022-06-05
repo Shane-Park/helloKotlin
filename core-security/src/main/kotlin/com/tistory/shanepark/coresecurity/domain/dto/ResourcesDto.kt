@@ -24,6 +24,6 @@ data class ResourcesDto(
     }
 
     fun toResource(): Resources {
-        return Resources(resourceName, null, httpMethod, resourceType, orderNum)
+        return Resources(id.toLong(), resourceName, null, httpMethod, resourceType, orderNum)
     }
 }

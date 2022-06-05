@@ -101,7 +101,10 @@ class SecurityConfig(
 
     @Bean
     fun urlFilterInvocationSecurityMetadataSource(): FilterInvocationSecurityMetadataSource? {
-        return UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean().getObject())
+        return UrlFilterInvocationSecurityMetadataSource(
+            urlResourcesMapFactoryBean().getObject(),
+            securityResourceService
+        )
     }
 
     private fun urlResourcesMapFactoryBean(): UrlResourcesMapFactoryBean {

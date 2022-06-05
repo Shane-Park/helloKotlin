@@ -8,18 +8,19 @@ import javax.persistence.*
 @Table(name = "RESOURCES")
 @EntityListeners(value = [AuditingEntityListener::class])
 class Resources(
+    id: Long?,
     resourceName: String?,
     roleSet: Set<Role>?,
     httpMethod: String?,
     resourceType: String?,
     orderNum: Int?,
 ) : Serializable {
-    constructor() : this(null, null, null, null, null)
+    constructor() : this(null, null, null, null, null, null)
 
     @Id
     @GeneratedValue
     @Column(name = "resource_id")
-    var id: Long? = null
+    var id: Long? = id
 
     @Column(name = "resource_name")
     var resourceName: String? = resourceName
@@ -37,5 +38,5 @@ class Resources(
     @JoinTable(name = "role_resources",
         joinColumns = [JoinColumn(name = "resource_id")],
         inverseJoinColumns = [JoinColumn(name = "role_id")])
-    var roleSet: Set<Role> ?= roleSet
+    var roleSet: Set<Role>? = roleSet
 }

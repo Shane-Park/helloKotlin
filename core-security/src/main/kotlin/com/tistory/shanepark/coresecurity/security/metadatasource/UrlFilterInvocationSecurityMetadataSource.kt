@@ -1,5 +1,6 @@
 package com.tistory.shanepark.coresecurity.security.metadatasource
 
+import com.tistory.shanepark.coresecurity.service.SecurityResourceService
 import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.web.FilterInvocation
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource
@@ -8,6 +9,7 @@ import java.util.function.Consumer
 
 class UrlFilterInvocationSecurityMetadataSource(
     private val requestMap: LinkedHashMap<RequestMatcher, List<ConfigAttribute>>,
+    private val securityResourceService: SecurityResourceService,
 ) : FilterInvocationSecurityMetadataSource {
 
     override fun getAttributes(`object`: Any?): List<ConfigAttribute>? {
@@ -35,5 +37,13 @@ class UrlFilterInvocationSecurityMetadataSource(
 
     override fun supports(clazz: Class<*>?): Boolean {
         return FilterInvocation::class.java.isAssignableFrom(clazz)
+    }
+
+    fun reload() {
+        requestMap.clear()
+        for (entry in securityResourceService.getResourceList().entries) {
+            requestMap[entry.key] = entry.value
+        }
+
     }
 }

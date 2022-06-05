@@ -72,7 +72,7 @@ class SetupDataLoader(
     ): Resources {
         var resources: Resources? = resourcesRepository.findByResourceNameAndHttpMethod(resourceName, httpMethod)
         if (resources == null) {
-            resources = Resources(resourceName, roleSet, httpMethod, resourceType, count.incrementAndGet())
+            resources = Resources(null, resourceName, roleSet, httpMethod, resourceType, count.incrementAndGet())
         }
         return resourcesRepository.save(resources)
     }
