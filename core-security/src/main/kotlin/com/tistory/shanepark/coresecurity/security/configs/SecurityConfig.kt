@@ -12,8 +12,10 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.access.AccessDecisionManager
+import org.springframework.security.access.AccessDecisionVoter
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl
 import org.springframework.security.access.vote.AffirmativeBased
-import org.springframework.security.access.vote.RoleVoter
+import org.springframework.security.access.vote.RoleHierarchyVoter
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -41,7 +43,7 @@ class SecurityConfig(
 ) : WebSecurityConfigurerAdapter() {
 
     private val log = LoggerFactory.getLogger(javaClass)
-    private val permitAllResources: Array<String> = arrayOf("/", "/login", "/user/login/**", "/mypage")
+    private val permitAllResources: Array<String> = arrayOf("/", "/login", "/user/login/**")
 
     override fun configure(web: WebSecurity) {
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations())
@@ -134,8 +136,22 @@ class SecurityConfig(
         return AffirmativeBased(getAccessDecisionVoters())
     }
 
-    private fun getAccessDecisionVoters(): List<RoleVoter> {
-        return listOf(RoleVoter())
+    private fun getAccessDecisionVoters(): MutableList<AccessDecisionVoter<out Any>> {
+        val accessDecisionVoters = mutableListOf<AccessDecisionVoter<out Any>>()
+//        accessDecisionVoters.add(RoleVoter())
+        accessDecisionVoters.add(hierarchyVoter())
+
+        return accessDecisionVoters
+    }
+
+    @Bean
+    fun hierarchyVoter(): AccessDecisionVoter<out Any> {
+        return RoleHierarchyVoter(roleHierarchy())
+    }
+
+    @Bean
+    fun roleHierarchy(): RoleHierarchyImpl {
+        return RoleHierarchyImpl()
     }
 
     @Bean

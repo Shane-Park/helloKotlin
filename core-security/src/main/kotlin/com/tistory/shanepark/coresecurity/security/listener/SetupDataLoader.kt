@@ -3,7 +3,9 @@ package com.tistory.shanepark.coresecurity.security.listener
 import com.tistory.shanepark.coresecurity.domain.entity.Account
 import com.tistory.shanepark.coresecurity.domain.entity.Resources
 import com.tistory.shanepark.coresecurity.domain.entity.Role
+import com.tistory.shanepark.coresecurity.domain.entity.RoleHierarchy
 import com.tistory.shanepark.coresecurity.repository.ResourcesRepository
+import com.tistory.shanepark.coresecurity.repository.RoleHierarchyRepository
 import com.tistory.shanepark.coresecurity.repository.RoleRepository
 import com.tistory.shanepark.coresecurity.repository.UserRepository
 import org.springframework.context.ApplicationListener
@@ -19,6 +21,7 @@ class SetupDataLoader(
     private val roleRepository: RoleRepository,
     private val resourcesRepository: ResourcesRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val roleHierarchyRepository: RoleHierarchyRepository,
 ) : ApplicationListener<ContextRefreshedEvent?> {
     private var alreadySetup = false
 
@@ -36,7 +39,12 @@ class SetupDataLoader(
         val adminRole: Role = createRoleIfNotFound("ROLE_ADMIN", "관리자")
         roles.add(adminRole)
         createResourceIfNotFound("/admin/**", "", roles, "url")
-        val account: Account = createUserIfNotFound("admin", "pass", "admin@gmail.com", 10, roles)
+        createUserIfNotFound("admin", "pass", "admin@gmail.com", 10, roles)
+
+        val managerRole = createRoleIfNotFound("ROLE_MANAGER", "매니저권한")
+        val userRole = createRoleIfNotFound("ROLE_USER", "사용자권한")
+        createRoleHierarchyIfNotFound(managerRole, adminRole)
+        createRoleHierarchyIfNotFound(userRole, managerRole)
     }
 
     @Transactional
@@ -75,6 +83,23 @@ class SetupDataLoader(
             resources = Resources(null, resourceName, roleSet, httpMethod, resourceType, count.incrementAndGet())
         }
         return resourcesRepository.save(resources)
+    }
+
+    @Transactional
+    fun createRoleHierarchyIfNotFound(childRole: Role, parentRole: Role) {
+        var roleHierarchy = roleHierarchyRepository.findByChildName(parentRole.roleName)
+        if (roleHierarchy == null) {
+            roleHierarchy = RoleHierarchy(null, parentRole.roleName, null)
+        }
+        val parentRoleHierarchy = roleHierarchyRepository.save(roleHierarchy)
+
+        var roleHierarchy2 = roleHierarchyRepository.findByChildName(childRole.roleName)
+        if (roleHierarchy2 == null) {
+            roleHierarchy2 = RoleHierarchy(null, childRole.roleName, null)
+        }
+
+        val childRoleHierarchy = roleHierarchyRepository.save(roleHierarchy2)
+        childRoleHierarchy.parentName = parentRoleHierarchy
     }
 
     companion object {
