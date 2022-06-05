@@ -1,20 +1,16 @@
 package com.tistory.shanepark.coresecurity.security.metadatasource
 
 import org.springframework.security.access.ConfigAttribute
-import org.springframework.security.access.SecurityConfig
 import org.springframework.security.web.FilterInvocation
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.RequestMatcher
 import java.util.function.Consumer
 
-class UrlFilterInvocationSecurityMetadataSource : FilterInvocationSecurityMetadataSource {
-
-    private val requestMap: LinkedHashMap<RequestMatcher, List<ConfigAttribute>> = LinkedHashMap()
+class UrlFilterInvocationSecurityMetadataSource(
+    private val requestMap: LinkedHashMap<RequestMatcher, List<ConfigAttribute>>,
+) : FilterInvocationSecurityMetadataSource {
 
     override fun getAttributes(`object`: Any?): List<ConfigAttribute>? {
-
-        requestMap[AntPathRequestMatcher("/mypage")] = listOf(SecurityConfig("ROLE_USER"))
 
         val request = (`object` as FilterInvocation).request
         if (requestMap != null) {

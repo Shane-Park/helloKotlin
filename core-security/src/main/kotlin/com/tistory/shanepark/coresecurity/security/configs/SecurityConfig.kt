@@ -1,11 +1,13 @@
 package com.tistory.shanepark.coresecurity.security.configs
 
 import com.tistory.shanepark.coresecurity.security.common.FormAuthenticationDetailsSource
+import com.tistory.shanepark.coresecurity.security.factory.UrlResourcesMapFactoryBean
 import com.tistory.shanepark.coresecurity.security.handler.CustomAccessDeniedHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationFailureHandler
 import com.tistory.shanepark.coresecurity.security.handler.CustomAuthenticationSuccessHandler
 import com.tistory.shanepark.coresecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource
 import com.tistory.shanepark.coresecurity.security.provider.FormAuthenticationProvider
+import com.tistory.shanepark.coresecurity.service.SecurityResourceService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
@@ -35,6 +37,7 @@ class SecurityConfig(
     private val formWebAuthenticationDetailsSource: FormAuthenticationDetailsSource,
     private val formAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler,
     private val formAuthenticationFailureHandler: CustomAuthenticationFailureHandler,
+    private val securityResourceService: SecurityResourceService,
 ) : WebSecurityConfigurerAdapter() {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -98,7 +101,11 @@ class SecurityConfig(
 
     @Bean
     fun urlFilterInvocationSecurityMetadataSource(): FilterInvocationSecurityMetadataSource? {
-        return UrlFilterInvocationSecurityMetadataSource()
+        return UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean().getObject())
+    }
+
+    private fun urlResourcesMapFactoryBean(): UrlResourcesMapFactoryBean {
+        return UrlResourcesMapFactoryBean(securityResourceService)
     }
 
 
