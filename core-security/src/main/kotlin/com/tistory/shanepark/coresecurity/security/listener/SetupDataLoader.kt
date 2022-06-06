@@ -1,13 +1,7 @@
 package com.tistory.shanepark.coresecurity.security.listener
 
-import com.tistory.shanepark.coresecurity.domain.entity.Account
-import com.tistory.shanepark.coresecurity.domain.entity.Resources
-import com.tistory.shanepark.coresecurity.domain.entity.Role
-import com.tistory.shanepark.coresecurity.domain.entity.RoleHierarchy
-import com.tistory.shanepark.coresecurity.repository.ResourcesRepository
-import com.tistory.shanepark.coresecurity.repository.RoleHierarchyRepository
-import com.tistory.shanepark.coresecurity.repository.RoleRepository
-import com.tistory.shanepark.coresecurity.repository.UserRepository
+import com.tistory.shanepark.coresecurity.domain.entity.*
+import com.tistory.shanepark.coresecurity.repository.*
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -22,6 +16,7 @@ class SetupDataLoader(
     private val resourcesRepository: ResourcesRepository,
     private val passwordEncoder: PasswordEncoder,
     private val roleHierarchyRepository: RoleHierarchyRepository,
+    private val accessIpRepository: AccessIpRepository
 ) : ApplicationListener<ContextRefreshedEvent?> {
     private var alreadySetup = false
 
@@ -31,6 +26,8 @@ class SetupDataLoader(
             return
         }
         setupSecurityResources()
+        setupAccessIpData()
+
         alreadySetup = true
     }
 
@@ -100,6 +97,14 @@ class SetupDataLoader(
 
         val childRoleHierarchy = roleHierarchyRepository.save(roleHierarchy2)
         childRoleHierarchy.parentName = parentRoleHierarchy
+    }
+
+    private fun setupAccessIpData() {
+        val findByIpAddress = accessIpRepository.findByIpAddress("0:0:0:0:0:0:0:1")
+        if(findByIpAddress == null) {
+            val accessIp = AccessIp("0:0:0:0:0:0:0:1")
+            accessIpRepository.save(accessIp)
+        }
     }
 
     companion object {

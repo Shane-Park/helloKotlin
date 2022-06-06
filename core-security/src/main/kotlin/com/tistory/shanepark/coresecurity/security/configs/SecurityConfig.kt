@@ -6,6 +6,7 @@ import com.tistory.shanepark.coresecurity.security.filter.PermitAllFilter
 import com.tistory.shanepark.coresecurity.security.handler.*
 import com.tistory.shanepark.coresecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource
 import com.tistory.shanepark.coresecurity.security.provider.FormAuthenticationProvider
+import com.tistory.shanepark.coresecurity.security.voter.IpAddressVoter
 import com.tistory.shanepark.coresecurity.service.SecurityResourceService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
@@ -139,6 +140,7 @@ class SecurityConfig(
     private fun getAccessDecisionVoters(): MutableList<AccessDecisionVoter<out Any>> {
         val accessDecisionVoters = mutableListOf<AccessDecisionVoter<out Any>>()
 //        accessDecisionVoters.add(RoleVoter())
+        accessDecisionVoters.add(IpAddressVoter(securityResourceService))
         accessDecisionVoters.add(hierarchyVoter())
 
         return accessDecisionVoters
