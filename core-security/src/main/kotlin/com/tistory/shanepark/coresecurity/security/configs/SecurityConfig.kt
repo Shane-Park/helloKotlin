@@ -36,7 +36,6 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 class SecurityConfig(
     private val userDetailService: UserDetailsService,
     private val formWebAuthenticationDetailsSource: FormAuthenticationDetailsSource,
