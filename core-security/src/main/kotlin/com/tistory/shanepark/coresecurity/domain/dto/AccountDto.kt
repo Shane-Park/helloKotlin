@@ -6,8 +6,8 @@ import com.tistory.shanepark.coresecurity.domain.entity.Account
 
 data class AccountDto(
     @JsonProperty("id") val id: String?,
-    @JsonProperty("username") val username: String,
-    @JsonProperty("password") var password: String,
+    @JsonProperty("username") val username: String?,
+    @JsonProperty("password") var password: String?,
     @JsonProperty("email") val email: String?,
     @JsonProperty("age") val age: Int?,
     @JsonProperty("role") var roles: List<String>?,

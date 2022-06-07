@@ -6,8 +6,8 @@ import javax.persistence.*
 @Entity
 class Account(
     id: Long ?,
-    username: String,
-    password: String,
+    username: String?,
+    password: String?,
     email: String?,
     age: Int?,
     roles: Set<Role>?,
@@ -17,8 +17,8 @@ class Account(
     @Id
     @GeneratedValue
     var id: Long? = id
-    var username: String = username
-    var password: String = password
+    var username: String? = username
+    var password: String? = password
     var email: String? = email
     var age: Int? = age
 
@@ -40,6 +40,10 @@ class Account(
 //            account.roles = dto.roles
             return account
         }
+    }
+
+    fun getName(): String? {
+        return username
     }
 
 }
