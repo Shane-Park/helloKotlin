@@ -7,6 +7,7 @@ import com.tistory.shanepark.coresecurity.repository.RoleRepository
 import com.tistory.shanepark.coresecurity.repository.UserRepository
 import com.tistory.shanepark.coresecurity.service.UserService
 import org.slf4j.LoggerFactory
+import org.springframework.security.access.annotation.Secured
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -68,6 +69,11 @@ class UserServiceImpl(
 
     override fun deleteUser(id: Long) {
         userRepository.deleteById(id!!)
+    }
+
+    @Secured("ROLE_MANAGER")
+    override fun order() {
+        println("order")
     }
 
 }

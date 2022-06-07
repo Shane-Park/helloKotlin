@@ -18,6 +18,7 @@ class UserController(
     @GetMapping(value = ["/mypage"])
     @Throws(Exception::class)
     fun myPage(authentication: Authentication?, principal: Principal?): String {
+        userService. order();
         return "user/mypage"
     }
 
