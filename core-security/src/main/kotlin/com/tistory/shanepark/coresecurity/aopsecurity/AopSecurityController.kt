@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import java.security.Principal
 
 @Controller
-class AopSecurityController {
+class AopSecurityController(
+    private val aopMethodService: AopMethodService
+) {
 
     @GetMapping("/preAuthorize")
     @PreAuthorize("hasRole('ROLE_USER') and #account.username == principal.name")
@@ -18,6 +20,15 @@ class AopSecurityController {
         principal: Principal?,
     ): String {
         model.addAttribute("method", "Success @PreAuthorize")
+        return "aop/method"
+    }
+
+    @GetMapping("/methodSecured")
+    fun methodSecured(
+        model: Model
+    ): String {
+        aopMethodService.methodSecured()
+        model.addAttribute("method", "Success MethodSecured")
         return "aop/method"
     }
 

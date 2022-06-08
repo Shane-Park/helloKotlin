@@ -6,7 +6,7 @@ import com.tistory.shanepark.coresecurity.domain.entity.Role
 
 
 data class ResourcesDto(
-    @JsonProperty val id: String,
+    @JsonProperty val id: String?,
     @JsonProperty val resourceName: String?,
     @JsonProperty val httpMethod: String?,
     @JsonProperty val orderNum: Int?,
@@ -19,11 +19,22 @@ data class ResourcesDto(
 
     companion object {
         fun fromResources(r: Resources): ResourcesDto {
-            return ResourcesDto(r.id.toString(), r.resourceName, r.httpMethod, r.orderNum, r.resourceType, null, r.roleSet)
+            return ResourcesDto(r.id.toString(),
+                r.resourceName,
+                r.httpMethod,
+                r.orderNum,
+                r.resourceType,
+                null,
+                r.roleSet)
         }
     }
 
     fun toResource(): Resources {
-        return Resources(id.toLong(), resourceName, null, httpMethod, resourceType, orderNum)
+        return Resources(
+            if (id?.isNotEmpty() != true) {
+                null
+            } else {
+                id?.toLong()
+            }, resourceName, null, httpMethod, resourceType, orderNum)
     }
 }
