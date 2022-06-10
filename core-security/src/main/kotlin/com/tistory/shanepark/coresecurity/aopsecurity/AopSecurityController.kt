@@ -9,7 +9,8 @@ import java.security.Principal
 
 @Controller
 class AopSecurityController(
-    private val aopMethodService: AopMethodService
+    private val aopMethodService: AopMethodService,
+    private val aopPointcutService: AopPointcutService,
 ) {
 
     @GetMapping("/preAuthorize")
@@ -25,11 +26,22 @@ class AopSecurityController(
 
     @GetMapping("/methodSecured")
     fun methodSecured(
-        model: Model
+        model: Model,
     ): String {
         aopMethodService.methodSecured()
         model.addAttribute("method", "Success MethodSecured")
         return "aop/method"
     }
+
+    @GetMapping("/pointcutSecured")
+    fun pointcutSecured(
+        model: Model,
+    ): String {
+        aopPointcutService.pointcutSecured()
+        aopPointcutService.notSecured()
+        model.addAttribute("pointcut", "pointcut Secured")
+        return "aop/method"
+    }
+
 
 }

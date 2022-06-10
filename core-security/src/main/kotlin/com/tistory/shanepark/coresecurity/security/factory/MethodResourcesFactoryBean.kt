@@ -3,15 +3,15 @@ package com.tistory.shanepark.coresecurity.security.factory
 import com.tistory.shanepark.coresecurity.service.SecurityResourceService
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.security.access.ConfigAttribute
-import org.springframework.security.web.util.matcher.RequestMatcher
 
 class MethodResourcesFactoryBean(
     private val securityResourceService: SecurityResourceService,
-    ) : FactoryBean<LinkedHashMap<String, List<ConfigAttribute>>> {
+    private val resourceType: String,
+) : FactoryBean<Map<String, List<ConfigAttribute>>> {
 
     private var resourceMap: LinkedHashMap<String, List<ConfigAttribute>>? = null
 
-    override fun getObject(): LinkedHashMap<String, List<ConfigAttribute>> {
+    override fun getObject(): Map<String, List<ConfigAttribute>> {
         if (resourceMap == null) {
             init();
         }
@@ -20,7 +20,11 @@ class MethodResourcesFactoryBean(
     }
 
     private fun init() {
-        resourceMap = securityResourceService.getMethodResourceList()
+        if (resourceType == "method") {
+            resourceMap = securityResourceService.getMethodResourceList()
+        } else if (resourceType == "pointcut") {
+            resourceMap = securityResourceService.getPointcutMethodResourceList()
+        }
     }
 
     override fun getObjectType(): Class<*>? {

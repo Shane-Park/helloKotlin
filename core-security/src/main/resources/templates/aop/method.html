@@ -19,6 +19,7 @@
                             <a th:href="@{/pointcutSecured}" style="margin:5px;" class="nav-link text-primary">포인트컷보안</a>
                             <a th:href="@{/liveMethodSecured}" style="margin:5px;" class="nav-link text-primary">실시간메소드보안</a>
                             <a th:href="@{/methodSecured}"  style="margin:5px;" class="nav-link text-primary">MethodSecured</a>
+                            <a th:href="@{/pointcutSecured}"  style="margin:5px;" class="nav-link text-primary">pointcutSecured</a>
                         </div>
                     </li>
                 </ul>
@@ -27,6 +28,7 @@
         <div style="padding-top:50px;"  class="col">
             <div class="container text-center">
                 <h1 class="text-primary" th:text="${method}">Method</h1>
+                <h1 class="text-primary" th:text="${pointcut}">Pointcut</h1>
         </div>
     </div>
 </div>

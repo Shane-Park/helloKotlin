@@ -44,4 +44,20 @@ class SecurityResourceService(
     fun getAccessIpList(): MutableList<String>? {
         return accessIpRepository.findAll().stream().map { accessIp -> accessIp.ipAddress }.collect(Collectors.toList())
     }
+
+    fun getPointcutMethodResourceList(): LinkedHashMap<String, List<ConfigAttribute>>? {
+        val result: LinkedHashMap<String, List<ConfigAttribute>> = LinkedHashMap()
+        val resourceList = resourcesRepository.findAllPointcutResources()
+        resourceList?.forEach { resource ->
+            val configAttributeList: MutableList<ConfigAttribute> = ArrayList()
+            resource?.roleSet?.forEach { role ->
+                configAttributeList.add(SecurityConfig(role.roleName))
+            }
+            if (resource?.resourceName != null) {
+                result[resource?.resourceName!!] = configAttributeList
+            }
+        }
+        return result
+
+    }
 }
