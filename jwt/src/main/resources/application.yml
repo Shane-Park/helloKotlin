@@ -23,3 +23,8 @@ spring:
 logging:
   level:
     com.tistory.shanepark.jwt: debug
+
+jwt:
+  header: Authorization
+  secret: shaneshaneshaneshaneshaneshaneshaneshaneshaneshaneshaneshaneshaneshaneshaneshaneshaneshaneshaneshane
+  token-validity-in-seconds: 86400
