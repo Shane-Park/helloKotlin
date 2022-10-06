@@ -34,7 +34,7 @@ class TokenProvider(
         this.key = Keys.hmacShaKeyFor(keyBytes)
     }
 
-    fun createToken(authentication: Authentication): String? {
+    fun createToken(authentication: Authentication): String {
         val authorities = authentication.authorities.stream()
             .map { it.authority }
             .collect(java.util.stream.Collectors.joining(","))

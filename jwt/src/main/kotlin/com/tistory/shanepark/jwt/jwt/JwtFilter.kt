@@ -8,13 +8,12 @@ import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 
 class JwtFilter(
-    val tokenProvider: TokenProvider
+    private val tokenProvider: TokenProvider
 ) : GenericFilterBean() {
 
-    val log = org.slf4j.LoggerFactory.getLogger(this.javaClass)
-    val authHeader = "Authorization"
+    private val log = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 
-    override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
+    override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val httpServletRequest = request as HttpServletRequest
         val jwt = resolveToken(httpServletRequest)
         val requestURI = httpServletRequest.requestURI
@@ -26,6 +25,7 @@ class JwtFilter(
         } else {
             log.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI)
         }
+        chain.doFilter(request, response)
     }
 
     private fun resolveToken(req: HttpServletRequest): String? {
@@ -34,6 +34,10 @@ class JwtFilter(
             return bearerToken.substring(7)
         }
         return null
+    }
+
+    companion object {
+        const val authHeader = "Authorization"
     }
 
 }
