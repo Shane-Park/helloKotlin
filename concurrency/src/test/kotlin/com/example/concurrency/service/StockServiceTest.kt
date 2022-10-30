@@ -15,14 +15,21 @@ import java.util.concurrent.Executors
 internal class StockServiceTest {
 
     @Autowired
-    private lateinit var stockService: StockService
+    private lateinit var synchronizedStockService: StockService
+
+    @Autowired
+    private lateinit var pessimisticLockStockService: StockService
 
     @Autowired
     private lateinit var stockRepository: StockRepository
 
+    var stockId: Long? = null
+
     @BeforeEach
     fun setUp() {
-        Stock(productId = 1L, quantity = 100L).let(stockRepository::save)
+        val stock = Stock(productId = 1L, quantity = 100L)
+        stock.let(stockRepository::save)
+        stockId = stock.id
     }
 
     @AfterEach
@@ -32,9 +39,9 @@ internal class StockServiceTest {
 
     @Test
     fun `decreaseStock should decrease stock`() {
-        stockService.decreaseStock(productId = 1L, quantity = 1L)
+        synchronizedStockService.decreaseStock(id = stockId!!, quantity = 1L)
 
-        stockRepository.findById(1L).orElseThrow().let {
+        stockRepository.findById(stockId!!).orElseThrow().let {
             assertThat(it.quantity).isEqualTo(99L)
         }
     }
@@ -48,7 +55,7 @@ internal class StockServiceTest {
         for (i in 0 until threadCount) {
             executorService.submit {
                 try {
-                    stockService.decreaseStock(productId = 1L, quantity = 1L)
+                    synchronizedStockService.decreaseStock(id = stockId!!, quantity = 1L)
                 } finally {
                     latch.countDown()
                 }
@@ -56,7 +63,29 @@ internal class StockServiceTest {
         }
         latch.await()
 
-        stockRepository.findById(1L).orElseThrow().let {
+        stockRepository.findById(stockId!!).orElseThrow().let {
+            assertThat(it.quantity).isEqualTo(0L)
+        }
+    }
+
+    @Test
+    fun `PessimisticLock decrease`() {
+        val threadCount = 100
+        val executorService = Executors.newFixedThreadPool(32)
+        val latch = CountDownLatch(threadCount)
+
+        for (i in 0 until threadCount) {
+            executorService.submit {
+                try {
+                    pessimisticLockStockService.decreaseStock(id = stockId!!, quantity = 1L)
+                } finally {
+                    latch.countDown()
+                }
+            }
+        }
+        latch.await()
+
+        stockRepository.findById(stockId!!).orElseThrow().let {
             assertThat(it.quantity).isEqualTo(0L)
         }
     }
