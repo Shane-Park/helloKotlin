@@ -1,9 +1,6 @@
 package com.example.concurrency.domain
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 
 @Entity
 class Stock(
@@ -14,6 +11,8 @@ class Stock(
     var productId: Long,
     var quantity: Long,
 ) {
+    @Version
+    var version: Long? = null
 
     fun decreaseStock(quantity: Long) {
         if (this.quantity < quantity) {
