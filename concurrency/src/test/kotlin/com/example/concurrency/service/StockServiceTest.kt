@@ -39,9 +39,6 @@ internal class StockServiceTest {
         }
     }
 
-    /**
-     * can't pass now. 
-     */
     @Test
     fun `multiThread decrease`() {
         val threadCount = 100
@@ -62,7 +59,6 @@ internal class StockServiceTest {
         stockRepository.findById(1L).orElseThrow().let {
             assertThat(it.quantity).isEqualTo(0L)
         }
-
     }
 
 }
