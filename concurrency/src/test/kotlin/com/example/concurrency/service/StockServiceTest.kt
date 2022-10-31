@@ -1,6 +1,7 @@
 package com.example.concurrency.service
 
 import com.example.concurrency.domain.Stock
+import com.example.concurrency.facade.NamedLockStockFacade
 import com.example.concurrency.facade.OptimisticLockStockFacade
 import com.example.concurrency.repository.StockRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -23,6 +24,9 @@ internal class StockServiceTest {
 
     @Autowired
     private lateinit var optimisticLockStockFacade: OptimisticLockStockFacade
+
+    @Autowired
+    private lateinit var namedLockStockFacade: NamedLockStockFacade
 
     @Autowired
     private lateinit var stockRepository: StockRepository
@@ -104,6 +108,31 @@ internal class StockServiceTest {
             executorService.submit {
                 try {
                     optimisticLockStockFacade.decreaseStock(id = stockId!!, quantity = 1L)
+                } finally {
+                    latch.countDown()
+                }
+            }
+        }
+        latch.await()
+
+        stockRepository.findById(stockId!!).orElseThrow().let {
+            assertThat(it.quantity).isEqualTo(0L)
+        }
+    }
+
+    /**
+     * if you use named lock, you should do care about releasing lock and finishing session when the transaction ends.
+     */
+    @Test
+    fun `NamedLock decrease`() {
+        val threadCount = 100
+        val executorService = Executors.newFixedThreadPool(32)
+        val latch = CountDownLatch(threadCount)
+
+        for (i in 0 until threadCount) {
+            executorService.submit {
+                try {
+                    namedLockStockFacade.decreaseStock(id = stockId!!, quantity = 1L)
                 } finally {
                     latch.countDown()
                 }
