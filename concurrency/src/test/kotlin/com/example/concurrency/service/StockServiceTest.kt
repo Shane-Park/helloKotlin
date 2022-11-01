@@ -4,6 +4,7 @@ import com.example.concurrency.domain.Stock
 import com.example.concurrency.facade.LettuceLockStockFacade
 import com.example.concurrency.facade.NamedLockStockFacade
 import com.example.concurrency.facade.OptimisticLockStockFacade
+import com.example.concurrency.facade.RedissonLockStockFacade
 import com.example.concurrency.repository.StockRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -31,6 +32,9 @@ internal class StockServiceTest {
 
     @Autowired
     private lateinit var lettuceLockStockFacade: LettuceLockStockFacade
+
+    @Autowired
+    private lateinit var redissonLockStockFacade: RedissonLockStockFacade
 
     @Autowired
     private lateinit var stockRepository: StockRepository
@@ -159,6 +163,32 @@ internal class StockServiceTest {
             executorService.submit {
                 try {
                     lettuceLockStockFacade.decreaseStock(id = stockId!!, quantity = 1L)
+                } finally {
+                    latch.countDown()
+                }
+            }
+        }
+        latch.await()
+
+        stockRepository.findById(stockId!!).orElseThrow().let {
+            assertThat(it.quantity).isEqualTo(0L)
+        }
+    }
+
+    /**
+     * If you do not need to retry, lettuce lock is easier to use.
+     * But if you need retry, use redisson lock.
+     */
+    @Test
+    fun `RedissonLock decrease`() {
+        val threadCount = 100
+        val executorService = Executors.newFixedThreadPool(32)
+        val latch = CountDownLatch(threadCount)
+
+        for (i in 0 until threadCount) {
+            executorService.submit {
+                try {
+                    redissonLockStockFacade.decreaseStock(id = stockId!!, quantity = 1L)
                 } finally {
                     latch.countDown()
                 }
