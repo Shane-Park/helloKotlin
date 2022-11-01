@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class NamedLockStockService(
+class StockServiceImpl(
     private val stockRepository: StockRepository,
 ) : StockService {
 

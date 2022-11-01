@@ -1,6 +1,7 @@
 package com.example.concurrency.service
 
 import com.example.concurrency.domain.Stock
+import com.example.concurrency.facade.LettuceLockStockFacade
 import com.example.concurrency.facade.NamedLockStockFacade
 import com.example.concurrency.facade.OptimisticLockStockFacade
 import com.example.concurrency.repository.StockRepository
@@ -27,6 +28,9 @@ internal class StockServiceTest {
 
     @Autowired
     private lateinit var namedLockStockFacade: NamedLockStockFacade
+
+    @Autowired
+    private lateinit var lettuceLockStockFacade: LettuceLockStockFacade
 
     @Autowired
     private lateinit var stockRepository: StockRepository
@@ -133,6 +137,28 @@ internal class StockServiceTest {
             executorService.submit {
                 try {
                     namedLockStockFacade.decreaseStock(id = stockId!!, quantity = 1L)
+                } finally {
+                    latch.countDown()
+                }
+            }
+        }
+        latch.await()
+
+        stockRepository.findById(stockId!!).orElseThrow().let {
+            assertThat(it.quantity).isEqualTo(0L)
+        }
+    }
+
+    @Test
+    fun `LettuceLock decrease`() {
+        val threadCount = 100
+        val executorService = Executors.newFixedThreadPool(32)
+        val latch = CountDownLatch(threadCount)
+
+        for (i in 0 until threadCount) {
+            executorService.submit {
+                try {
+                    lettuceLockStockFacade.decreaseStock(id = stockId!!, quantity = 1L)
                 } finally {
                     latch.countDown()
                 }
